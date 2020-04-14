@@ -37,4 +37,10 @@ application.add_route("/account/delete_token", account_resources.ResourceDeleteU
 
 application.add_route("/users/register", user_resources.ResourceRegisterUser())
 application.add_route("/users/show/{username}", user_resources.ResourceGetUserProfile())
+
+#------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
+application.add_route("/users/profile/addInstrument", user_resources.ResourceSetTableInstruments())
+application.add_route("/users/profile/getInstrumentList", user_resources.ResourceGetTableInstruments())
+application.add_route("/users/profile/deleteInstrument", user_resources.ResourceRemoveInstrument())
+
 application.add_sink(handle_404, "")

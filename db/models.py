@@ -72,6 +72,7 @@ class User(SQLAlchemyBase, JSONModel):
     genere = Column(Enum(GenereEnum))
     phone = Column(Unicode(50))
     photo = Column(Unicode(255))
+   
 
     @hybrid_property
     def public_profile(self):
@@ -118,3 +119,51 @@ class User(SQLAlchemyBase, JSONModel):
             "phone": self.phone,
             "photo": self.photo,
         }
+
+        
+# ------------------- MODELOS INSTRUMENTOS ------------------------
+class UserInstruments(SQLAlchemyBase, JSONModel):
+    __tablename__ = "user-instruments"
+
+    id = Column(Integer, ForeignKey("users.id"))
+    id_instrument = Column(Integer, primary_key=True, unique=True)
+    expirience = Column(Integer)
+    
+
+
+    @hybrid_property
+    def json_model(self):
+        return {
+            "id_user" : self.id,
+            "id_instrument" : self.id_instrument,
+            "expirience" : self.expirience
+        }
+
+class Instruments(SQLAlchemyBase, JSONModel):
+    __tablename__ = "instruments"
+
+    id_instrument = Column(Integer, unique=True)
+    name = Column(Unicode(50), primary_key=True)
+
+     
+    @hybrid_property
+    def json_model(self):
+        return {
+            "id_instrument" : self.id_instrument,
+            "name" : self.name 
+        }
+
+    @hybrid_property
+    def json_model(self):
+        return {
+            "id_instrument" : self.id_instrument,
+            "name" : self.name 
+        }
+
+    
+
+        
+    
+
+    
+    

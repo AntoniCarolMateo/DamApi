@@ -11,7 +11,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import phonenumbers
 
 import messages
-from db.models import User
+from db.models import User, UserInstruments, Instruments
 from hooks import requires_auth
 from resources.base_resources import DAMCoreResource
 from resources.schemas import SchemaRegisterUser
@@ -73,3 +73,106 @@ class ResourceRegisterUser(DAMCoreResource):
             raise falcon.HTTPBadRequest(description=messages.parameters_invalid)
 
         resp.status = falcon.HTTP_200
+
+@falcon.before(requires_auth)
+class ResourceSetTableInstruments(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceSetTableInstruments, self).on_post(req, resp, *args, **kwargs)
+        print("chivato")
+        
+        aux_instrument = UserInstruments()
+        
+        try:
+            # RECOGEMOS LOS VALORS, A PARTIR DE LA AUTENTICACIÓN QUE REQUIERE ESTA CALL,
+            # conseguimos el id del usuario que quiere añadir elementos
+            # --- req.media --- Cogemos del cuerpo JSON
+
+            auth_user = req.context["auth_user"]
+
+            aux_instrumentName = req.media["nameInstrument"]
+            aux_expirience = req.media["expirience"]
+
+            #mediante el String instrumento, hacemos una query para buscar su d
+            aux_idInstrument = self.db_session.query(Instruments).filter(Instruments.name == aux_instrumentName).one()
+            
+
+            #Guardamos los valores en el objeto UserInstruments, para acutaliarlo en la base e datos
+            aux_instrument.id  = auth_user.id
+            aux_instrument.id_instrument = aux_idInstrument.id_instrument
+            aux_instrument.expirience = aux_expirience
+
+            self.db_session.add(aux_instrument)
+            self.db_session.commit()
+
+        except KeyError:
+             raise falcon.HTTPBadRequest(description=messages.parameters_invalid)
+        
+        resp.status = falcon.HTTP_200
+
+@falcon.before(requires_auth)
+class ResourceGetTableInstruments(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceGetTableInstruments, self).on_get(req, resp, *args, **kwargs)
+        
+        current_user = req.context["auth_user"]
+        data = []
+
+        #Comprovamos cuantos instrumentos tiene el usuario
+        count = self.db_session.query(UserInstruments).filter(UserInstruments.id == current_user.id).count()
+        print(count)
+
+        #recogemos los datos de estos
+        result = self.db_session.query(Instruments, UserInstruments.expirience).select_from(Instruments).filter(UserInstruments.id_instrument == Instruments.id_instrument).all()
+
+        #A CADA FILA tenim 3 columnes, id_instrument, el seu nom, i la experiencia
+        #-------> row[0] = sifnifica la part qu té INSTRUMENT, nom e id.
+        #-------> row[1] = La par de USERINSTRUMENT, experiènicia
+        for i in range(count):
+            row = result.pop(i - 1)
+            json = row[0].json_model
+            json["expirience"] = row[1]
+            data.append(json)
+                
+        print(data)
+
+        resp.media = data
+        resp.status = falcon.HTTP_200
+
+
+# funcional, aún falta algunos retoques
+@falcon.before(requires_auth)
+class ResourceRemoveInstrument(DAMCoreResource):
+     def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceRemoveInstrument, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        aux_instrumentName = req.media["nameInstrument"]
+
+        aux_idInstrument = self.db_session.query(Instruments).filter(Instruments.name == aux_instrumentName).one()
+
+        aux_instrument = self.db_session.query(UserInstruments).filter(UserInstruments.id_instrument == aux_idInstrument.id_instrument , UserInstruments.id == current_user.id).one()
+
+        print(aux_instrument.json_model)
+
+        self.db_session.delete(aux_instrument)
+        self.db_session.commit()
+
+
+        resp.media = "removed"
+        resp.status = falcon.HTTP_200
+
+       
+
+
+        
+
+
+    
+
+
+
+     
+     
+
+

@@ -9,7 +9,7 @@ from sqlalchemy.sql import text
 
 import db
 import settings
-from db.models import SQLAlchemyBase, User, GenereEnum, UserToken
+from db.models import SQLAlchemyBase, User, GenereEnum, UserToken, UserInstruments, Instruments
 from settings import DEFAULT_LANGUAGE
 
 # LOGGING
@@ -78,8 +78,38 @@ if __name__ == "__main__":
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
 
+
+    # -------------------- CREATE Instruments --------------------
+    mylogger.info("Creating instrumets data...")
+    # noinspection PyArgumentList
+    instrument1 = Instruments(
+        id_instrument=1,
+        name="Guitarra"
+    )
+    instrument2 = Instruments(
+        id_instrument=2,
+        name="Trompeta"
+    )
+    instrument3 = Instruments(
+        id_instrument=3,
+        name="Piano"
+    )
+    instrument4 = Instruments(
+        id_instrument=4,
+        name="Maracas"
+    )
+    
+
     db_session.add(user_admin)
     db_session.add(user_1)
     db_session.add(user_2)
+
+    #----Adding Instruments----#
+    db_session.add(instrument1)
+    db_session.add(instrument2)
+    db_session.add(instrument3)
+    db_session.add(instrument4)
+
+    
     db_session.commit()
     db_session.close()
