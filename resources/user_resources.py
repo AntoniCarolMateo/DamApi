@@ -38,9 +38,7 @@ class ResourceRegisterUser(DAMCoreResource):
     @jsonschema.validate(SchemaRegisterUser)
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceRegisterUser, self).on_post(req, resp, *args, **kwargs)
-        print("chivato")
         aux_user = User()
-        print("password: " + req.media["password"] + " username" + req.media["username"])
 
         try:
             aux_user.password = req.media["password"]
@@ -138,6 +136,18 @@ class ResourceGetTableInstruments(DAMCoreResource):
         resp.media = data
         resp.status = falcon.HTTP_200
 
+class ResourceGetUsers(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceGetUsers, self).on_get(req, resp, *args, **kwargs)
+        data = []
+
+        results = self.db_session.query(User).all()
+           
+        for result in results:
+            data.append(result.public_profile)
+
+        resp.media = data
+        resp.status = falcon.HTTP_200
 
 # funcional, aún falta algunos retoques
 @falcon.before(requires_auth)

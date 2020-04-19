@@ -24,10 +24,7 @@ class ResourceCreateUserToken(DAMCoreResource):
         print("basic_auth_raw: " + basic_auth_raw)
         if basic_auth_raw is not None:
             basic_auth = basic_auth_raw.split()[1]
-            print("basic_auth: " + basic_auth)
             auth_username, auth_password = (base64.b64decode(basic_auth).decode("utf-8").split(":"))
-            print("auth_username: " + auth_username)
-            print("auth_password: " + auth_password)
             if (auth_username is None) or (auth_password is None) or (auth_username == "") or (auth_password == ""):
                 raise falcon.HTTPUnauthorized(description=messages.username_and_password_required)
         else:

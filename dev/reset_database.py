@@ -49,6 +49,8 @@ if __name__ == "__main__":
         name="Administrator",
         surname="DamCore",
         genere=GenereEnum.male,
+        gps="42.090205,1.1504",
+
     )
     user_admin.set_password("DAMCoure")
 
@@ -60,7 +62,8 @@ if __name__ == "__main__":
         name="usuari",
         surname="1",
         birthdate=datetime.datetime(1989, 1, 1),
-        genere=GenereEnum.male
+        genere=GenereEnum.male,
+        gps="42.390205,3.1504",
     )
     user_1.set_password("a1s2d3f4")
     user_1.tokens.append(UserToken(token="656e50e154865a5dc469b80437ed2f963b8f58c8857b66c9bf"))
@@ -74,6 +77,8 @@ if __name__ == "__main__":
         surname="2",
         birthdate=datetime.datetime(2017, 1, 1),
         genere=GenereEnum.male,
+        gps="40.390205,2.5504",
+
     )
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
