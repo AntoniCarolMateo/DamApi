@@ -43,7 +43,7 @@ class ResourceRegisterUser(DAMCoreResource):
         try:
             aux_user.password = req.media["password"]
             aux_user.username = req.media["username"]
-
+            aux_user.gps = req.media["gps"]
             
             email_validator = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
 

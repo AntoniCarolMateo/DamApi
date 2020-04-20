@@ -76,10 +76,15 @@ class User(SQLAlchemyBase, JSONModel):
 
     @hybrid_property
     def public_profile(self):
+        mgenere = self.genere
+        if mgenere is None:
+            mgenere = ""
+        else:
+            mgenere = self.genere.value
         return {
             "created_at": self.created_at.strftime(settings.DATETIME_DEFAULT_FORMAT),
             "username": self.username,
-            "genere": self.genere.value,
+            "genere": mgenere,
             "photo": self.photo,
             "gps": self.gps
         }
