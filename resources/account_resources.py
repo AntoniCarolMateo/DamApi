@@ -83,3 +83,18 @@ class ResourceAccountUserProfile(DAMCoreResource):
 
         resp.media = current_user.json_model
         resp.status = falcon.HTTP_200
+
+
+@falcon.before(requires_auth)
+class ResourceAccountUpdateUserProfile(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceAccountUpdateUserProfile, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+        if req.media["description"] is not None:
+            current_user.description = req.media["description"]
+
+        self.db_session.add(current_user)
+        self.db_session.commit()
+
+        resp.status = falcon.HTTP_200

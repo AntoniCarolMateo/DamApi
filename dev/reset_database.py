@@ -50,6 +50,7 @@ if __name__ == "__main__":
         surname="DamCore",
         genere=GenereEnum.male,
         gps="42.090205,1.1504",
+        description="hola",
 
     )
     user_admin.set_password("DAMCoure")

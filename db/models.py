@@ -73,6 +73,8 @@ class User(SQLAlchemyBase, JSONModel):
     phone = Column(Unicode(50))
     photo = Column(Unicode(255))
     gps = Column(UnicodeText, nullable=False)
+    description = Column(Unicode(255))
+
 
     @hybrid_property
     def public_profile(self):
@@ -86,7 +88,9 @@ class User(SQLAlchemyBase, JSONModel):
             "username": self.username,
             "genere": mgenere,
             "photo": self.photo,
-            "gps": self.gps
+            "gps": self.gps,
+            "description": self.description
+
         }
 
     @hybrid_method
