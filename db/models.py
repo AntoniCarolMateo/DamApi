@@ -72,7 +72,7 @@ class User(SQLAlchemyBase, JSONModel):
     firstTime = Column(Boolean, default=True)
     email = Column(Unicode(255), )
     tokens = relationship("UserToken", back_populates="user", cascade="all, delete-orphan")
-    rol = Column(Integer)
+    rol = Column(Enum(RolEnum))
     name = Column(Unicode(50))
     surname = Column(Unicode(50))
     birthdate = Column(Date)
