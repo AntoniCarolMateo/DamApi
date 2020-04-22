@@ -7,6 +7,10 @@ import logging
 import falcon
 from falcon.media.validators import jsonschema
 
+from datetime import datetime
+
+
+
 import messages
 from db.models import User, UserToken, GenereEnum, RolEnum
 from hooks import requires_auth
@@ -96,21 +100,24 @@ class ResourceAccountUpdateUserProfile(DAMCoreResource):
         current_user = req.context["auth_user"]
 
         if req.media["name"] is not None:
-            current_user.description = req.media["name"]
+            current_user.name = req.media["name"]
         if req.media["surname"] is not None:
-            current_user.description = req.media["surname"]
+            current_user.surname = req.media["surname"]
         if req.media["expirience"] is not None:
+            current_user.expirience = req.media["expirience"]
+        if req.media["description"] is not None:
             current_user.description = req.media["description"]
-        if req.media["birthdate"] is not None:
-            current_user.description = req.media["expirience"]
-        #if req.media["description"] is not None:
-            #current_user.description = req.media["description"]
 
-        aux_gender = req.media["gender"]
-        if aux_gender == "MALE":
-            current_user.genere = GenereEnum.male
-        elif aux_gender == "FEMALE":
-            current_user.genere = GenereEnum.female
+        if req.media["birthdate"] is not None:
+           aux_birthdate = req.media["birthdate"]
+           current_user.birthdate = datetime.strptime(aux_birthdate, '%d-%m-%Y')
+
+        if req.media["gender"] is not None:
+            aux_gender = req.media["gender"]
+            if aux_gender == "MALE":
+                current_user.genere = GenereEnum.male
+            elif aux_gender == "FEMALE":
+                current_user.genere = GenereEnum.female
 
 
         self.db_session.add(current_user)
