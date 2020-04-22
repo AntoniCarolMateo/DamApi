@@ -89,7 +89,7 @@ class ResourceAccountUserProfile(DAMCoreResource):
 class ResourceAccountUpdateUserProfile(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAccountUpdateUserProfile, self).on_post(req, resp, *args, **kwargs)
-      
+
         current_user = req.context["auth_user"]
 
         if req.media["name"] is not None:

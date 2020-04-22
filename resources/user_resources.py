@@ -11,7 +11,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import phonenumbers
 
 import messages
-from db.models import User, UserInstruments, Instruments
+from db.models import User, UserInstruments, Instruments, UserMusicalGeneres, MusicalGenere
 from hooks import requires_auth
 from resources.base_resources import DAMCoreResource
 from resources.schemas import SchemaRegisterUser
@@ -72,14 +72,31 @@ class ResourceRegisterUser(DAMCoreResource):
 
         resp.status = falcon.HTTP_200
 
+
+
+class ResourceGetUsers(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceGetUsers, self).on_get(req, resp, *args, **kwargs)
+        data = []
+
+        results = self.db_session.query(User).all()
+
+        for result in results:
+            data.append(result.public_profile)
+
+        resp.media = data
+        resp.status = falcon.HTTP_200
+
+#------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
+
 @falcon.before(requires_auth)
 class ResourceAddInstrument(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAddInstrument, self).on_post(req, resp, *args, **kwargs)
         print("chivato")
-        
+
         aux_instrument = UserInstruments()
-        
+
         try:
             # RECOGEMOS LOS VALORS, A PARTIR DE LA AUTENTICACIÓN QUE REQUIERE ESTA CALL,
             # conseguimos el id del usuario que quiere añadir elementos
@@ -90,12 +107,11 @@ class ResourceAddInstrument(DAMCoreResource):
             aux_instrumentName = req.media["nameInstrument"]
             aux_expirience = req.media["expirience"]
 
-            #mediante el String instrumento, hacemos una query para buscar su id
+            # mediante el String instrumento, hacemos una query para buscar su id
             aux_idInstrument = self.db_session.query(Instruments).filter(Instruments.name == aux_instrumentName).one()
-            
 
-            #Guardamos los valores en el objeto UserInstruments, para acutaliarlo en la base e datos
-            aux_instrument.id  = auth_user.id
+            # Guardamos los valores en el objeto UserInstruments, para acutaliarlo en la base e datos
+            aux_instrument.id = auth_user.id
             aux_instrument.id_instrument = aux_idInstrument.id_instrument
             aux_instrument.expirience = aux_expirience
 
@@ -103,9 +119,11 @@ class ResourceAddInstrument(DAMCoreResource):
             self.db_session.commit()
 
         except KeyError:
-             raise falcon.HTTPBadRequest(description=messages.parameters_invalid)
-        
+            raise falcon.HTTPBadRequest(description=messages.parameters_invalid)
+
         resp.status = falcon.HTTP_200
+
+
 
 @falcon.before(requires_auth)
 class ResourceGetTableInstruments(DAMCoreResource):
@@ -136,18 +154,7 @@ class ResourceGetTableInstruments(DAMCoreResource):
         resp.media = data
         resp.status = falcon.HTTP_200
 
-class ResourceGetUsers(DAMCoreResource):
-    def on_get(self, req, resp, *args, **kwargs):
-        super(ResourceGetUsers, self).on_get(req, resp, *args, **kwargs)
-        data = []
 
-        results = self.db_session.query(User).all()
-           
-        for result in results:
-            data.append(result.public_profile)
-
-        resp.media = data
-        resp.status = falcon.HTTP_200
 
 # funcional, aún falta algunos retoques
 @falcon.before(requires_auth)
@@ -173,6 +180,82 @@ class ResourceRemoveInstrument(DAMCoreResource):
         resp.status = falcon.HTTP_200
 
        
+#------------------------------- GESTIÓN USER-GENERES ------------------------------------------#
+
+@falcon.before(requires_auth)
+class ResourceAddGenere(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceAddGenere, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+        aux_genere = UserMusicalGeneres()
+
+        try:
+            # RECOGEMOS LOS VALORS, A PARTIR DE LA AUTENTICACIÓN QUE REQUIERE ESTA CALL,
+            # conseguimos el id del usuario que quiere añadir elementos
+            # --- req.media --- Cogemos del cuerpo JSON
+
+            aux_nameGenere = req.media["nameGenere"]
+
+
+            aux_idGenere = self.db_session.query(MusicalGenere).filter(MusicalGenere.name == aux_nameGenere).one()
+
+            # Guardamos los valores en el objeto UserInstruments, para acutaliarlo en la base e datos
+            aux_genere.id_user =  current_user.id
+            aux_genere.id_genere= aux_idGenere.id
+            print(aux_genere.json_model)
+
+
+            self.db_session.add(aux_genere)
+            self.db_session.commit()
+
+        except KeyError:
+            raise falcon.HTTPBadRequest(description=messages.parameters_invalid)
+
+        resp.status = falcon.HTTP_200
+
+
+
+@falcon.before(requires_auth)
+class ResourceGetGenereList(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceGetGenereList, self).on_get(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+        data = []
+
+        count = self.db_session.query(UserMusicalGeneres).filter(UserMusicalGeneres.id_user == current_user.id).count()
+
+        result = self.db_session.query(MusicalGenere).filter(UserMusicalGeneres.id_genere == MusicalGenere.id).all()
+
+        for i in range(count):
+            row = result.pop(i - 1)
+            data.append(row.json_model)
+
+        resp.media = data
+        resp.status = falcon.HTTP_200
+
+@falcon.before(requires_auth)
+class ResourceRemoveGenere(DAMCoreResource):
+     def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceRemoveGenere, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        aux_nameGenere = req.media["nameGenere"]
+
+        aux_idGenere = self.db_session.query(MusicalGenere).filter(MusicalGenere.name == aux_nameGenere).one()
+
+        aux_genere = self.db_session.query(UserMusicalGeneres).filter(
+            UserMusicalGeneres.id_genere == aux_idGenere.id,
+            UserMusicalGeneres.id_user == current_user.id).one()
+
+        self.db_session.delete(aux_genere)
+        self.db_session.commit()
+
+        resp.media = "removed"
+        resp.status = falcon.HTTP_200
+
 
 
         

@@ -165,12 +165,34 @@ class Instruments(SQLAlchemyBase, JSONModel):
             "name" : self.name 
         }
 
+# ------------------- MODELOS Generes ------------------------
+class MusicalGenere(SQLAlchemyBase, JSONModel):
+    __tablename__ = "musicalgeneres"
+
+    id = Column(Integer, primary_key="true")
+    name = Column(Unicode(50))
+
     @hybrid_property
     def json_model(self):
         return {
-            "id_instrument" : self.id_instrument,
-            "name" : self.name 
+            "id": self.id,
+            "name": self.name
         }
+
+class UserMusicalGeneres(SQLAlchemyBase, JSONModel):
+    __tablename__ = "userMusicalGeneres"
+
+    id_user = Column(Integer)
+    id_genere = Column(Integer, primary_key="true")
+
+    @hybrid_property
+    def json_model(self):
+        return {
+            "id_user": self.id_user,
+            "id_genere": self.id_genere
+        }
+
+
 
     
 

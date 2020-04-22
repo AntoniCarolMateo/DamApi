@@ -9,7 +9,8 @@ from sqlalchemy.sql import text
 
 import db
 import settings
-from db.models import SQLAlchemyBase, User, GenereEnum, UserToken, UserInstruments, Instruments
+from db.models import SQLAlchemyBase, User, GenereEnum, UserToken
+from db.models import  UserInstruments, Instruments, UserMusicalGeneres, MusicalGenere
 from settings import DEFAULT_LANGUAGE
 
 # LOGGING
@@ -104,7 +105,24 @@ if __name__ == "__main__":
         id_instrument=4,
         name="Maracas"
     )
-    
+    # -------------------- CREATE Generes --------------------
+
+    mylogger.info("CreatinMusicalGenere data...")
+    genere1 = MusicalGenere(
+        id=1,
+        name="Rock"
+    )
+    genere2 = MusicalGenere(
+        id=2,
+        name="Pop"
+    )
+    genere3 = MusicalGenere(
+        id=3,
+        name="Country"
+    )
+
+
+
 
     db_session.add(user_admin)
     db_session.add(user_1)
@@ -116,6 +134,10 @@ if __name__ == "__main__":
     db_session.add(instrument3)
     db_session.add(instrument4)
 
+    # ----Adding Instruments----#
+    db_session.add(genere1)
+    db_session.add(genere2)
+    db_session.add(genere3)
     
     db_session.commit()
     db_session.close()
