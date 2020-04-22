@@ -8,7 +8,7 @@ import falcon
 from falcon.media.validators import jsonschema
 
 import messages
-from db.models import User, UserToken
+from db.models import User, UserToken, GenereEnum
 from hooks import requires_auth
 from resources.base_resources import DAMCoreResource
 from resources.schemas import SchemaUserToken
@@ -89,10 +89,26 @@ class ResourceAccountUserProfile(DAMCoreResource):
 class ResourceAccountUpdateUserProfile(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAccountUpdateUserProfile, self).on_post(req, resp, *args, **kwargs)
-
+      
         current_user = req.context["auth_user"]
-        if req.media["description"] is not None:
+
+        if req.media["name"] is not None:
+            current_user.description = req.media["name"]
+        if req.media["surname"] is not None:
+            current_user.description = req.media["surname"]
+        if req.media["expirience"] is not None:
             current_user.description = req.media["description"]
+        if req.media["birthdate"] is not None:
+            current_user.description = req.media["expirience"]
+        #if req.media["description"] is not None:
+            #current_user.description = req.media["description"]
+
+        aux_gender = req.media["gender"]
+        if aux_gender == "MALE":
+            current_user.genere = GenereEnum.male
+        elif aux_gender == "FEMALE":
+            current_user.genere = GenereEnum.female
+
 
         self.db_session.add(current_user)
         self.db_session.commit()

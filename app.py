@@ -32,16 +32,17 @@ app = application = falcon.API(
 application.add_route("/", common_resources.ResourceHome())
 
 application.add_route("/account/profile", account_resources.ResourceAccountUserProfile())
-application.add_route("/account/update_profile", account_resources.ResourceAccountUpdateUserProfile())
 application.add_route("/account/create_token", account_resources.ResourceCreateUserToken())
 application.add_route("/account/delete_token", account_resources.ResourceDeleteUserToken())
+
+application.add_route("/account/update_profile", account_resources.ResourceAccountUpdateUserProfile())
 
 application.add_route("/users/register", user_resources.ResourceRegisterUser())
 application.add_route("/users/show/{username}", user_resources.ResourceGetUserProfile())
 application.add_route("/users/all", user_resources.ResourceGetUsers())
 
 #------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
-application.add_route("/users/profile/addInstrument", user_resources.ResourceSetTableInstruments())
+application.add_route("/users/profile/addInstrument", user_resources.ResourceAddInstrument())
 application.add_route("/users/profile/getInstrumentList", user_resources.ResourceGetTableInstruments())
 application.add_route("/users/profile/deleteInstrument", user_resources.ResourceRemoveInstrument())
 

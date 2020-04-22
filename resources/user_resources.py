@@ -73,9 +73,9 @@ class ResourceRegisterUser(DAMCoreResource):
         resp.status = falcon.HTTP_200
 
 @falcon.before(requires_auth)
-class ResourceSetTableInstruments(DAMCoreResource):
+class ResourceAddInstrument(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
-        super(ResourceSetTableInstruments, self).on_post(req, resp, *args, **kwargs)
+        super(ResourceAddInstrument, self).on_post(req, resp, *args, **kwargs)
         print("chivato")
         
         aux_instrument = UserInstruments()
@@ -90,7 +90,7 @@ class ResourceSetTableInstruments(DAMCoreResource):
             aux_instrumentName = req.media["nameInstrument"]
             aux_expirience = req.media["expirience"]
 
-            #mediante el String instrumento, hacemos una query para buscar su d
+            #mediante el String instrumento, hacemos una query para buscar su id
             aux_idInstrument = self.db_session.query(Instruments).filter(Instruments.name == aux_instrumentName).one()
             
 

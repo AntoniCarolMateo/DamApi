@@ -12,7 +12,7 @@ from urllib.parse import urljoin
 import falcon
 from passlib.hash import pbkdf2_sha256
 from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, Unicode, \
-    UnicodeText
+    UnicodeText, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import relationship
@@ -64,6 +64,7 @@ class User(SQLAlchemyBase, JSONModel):
     created_at = Column(DateTime, default=datetime.datetime.now, nullable=False)
     username = Column(Unicode(50), unique=True, nullable=False)
     password = Column(UnicodeText, nullable=False)
+    firstTime = Column(Boolean, default=True)
     email = Column(Unicode(255), )
     tokens = relationship("UserToken", back_populates="user", cascade="all, delete-orphan")
     name = Column(Unicode(50))
