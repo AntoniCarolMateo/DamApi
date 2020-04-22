@@ -47,6 +47,11 @@ class GenereEnum(enum.Enum):
     male = "M"
     female = "F"
 
+class RolEnum(enum.Enum):
+    user = "user"
+    band = "band"
+    sponsor = "sponsor"
+
 
 class UserToken(SQLAlchemyBase):
     __tablename__ = "users_tokens"
@@ -67,6 +72,7 @@ class User(SQLAlchemyBase, JSONModel):
     firstTime = Column(Boolean, default=True)
     email = Column(Unicode(255), )
     tokens = relationship("UserToken", back_populates="user", cascade="all, delete-orphan")
+    rol = Column(Integer)
     name = Column(Unicode(50))
     surname = Column(Unicode(50))
     birthdate = Column(Date)

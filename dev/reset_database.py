@@ -9,7 +9,7 @@ from sqlalchemy.sql import text
 
 import db
 import settings
-from db.models import SQLAlchemyBase, User, GenereEnum, UserToken
+from db.models import SQLAlchemyBase, User, GenereEnum, UserToken, RolEnum
 from db.models import  UserInstruments, Instruments, UserMusicalGeneres, MusicalGenere
 from settings import DEFAULT_LANGUAGE
 
@@ -63,6 +63,7 @@ if __name__ == "__main__":
         email="usuari1@gmail.com",
         name="usuari",
         surname="1",
+        rol=RolEnum.user,
         birthdate=datetime.datetime(1989, 1, 1),
         genere=GenereEnum.male,
         gps="42.390205,3.1504",
@@ -77,6 +78,7 @@ if __name__ == "__main__":
         email="user2@gmail.com",
         name="user",
         surname="2",
+        rol= RolEnum.band,
         birthdate=datetime.datetime(2017, 1, 1),
         genere=GenereEnum.male,
         gps="40.390205,2.5504",

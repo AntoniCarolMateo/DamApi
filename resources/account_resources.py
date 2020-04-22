@@ -8,7 +8,7 @@ import falcon
 from falcon.media.validators import jsonschema
 
 import messages
-from db.models import User, UserToken, GenereEnum
+from db.models import User, UserToken, GenereEnum, RolEnum
 from hooks import requires_auth
 from resources.base_resources import DAMCoreResource
 from resources.schemas import SchemaUserToken
@@ -21,6 +21,7 @@ class ResourceCreateUserToken(DAMCoreResource):
         super(ResourceCreateUserToken, self).on_post(req, resp, *args, **kwargs)
 
         basic_auth_raw = req.get_header("Authorization")
+
         print("basic_auth_raw: " + basic_auth_raw)
         if basic_auth_raw is not None:
             basic_auth = basic_auth_raw.split()[1]
@@ -36,7 +37,9 @@ class ResourceCreateUserToken(DAMCoreResource):
 
         if (current_user is not None) and (current_user.check_password(auth_password)):
             current_token = current_user.create_token()
+
             try:
+                self.db_session.add(current_user)
                 self.db_session.commit()
                 resp.media = {"token": current_token.token}
                 resp.status = falcon.HTTP_200
