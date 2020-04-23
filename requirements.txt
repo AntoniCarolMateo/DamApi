@@ -1,8 +1,9 @@
 falcon
-passlib
-sqlalchemy
+pip
+setuptools
 sqlalchemy_i18n
+phonenumbers
 gunicorn
 pymysql
-jsonschema
-phonenumbers
+jsonchema
+
