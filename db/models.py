@@ -6,6 +6,7 @@ import datetime
 import enum
 import logging
 import os
+from _operator import and_
 from builtins import getattr
 from urllib.parse import urljoin
 
@@ -47,6 +48,7 @@ class GenereEnum(enum.Enum):
     male = "M"
     female = "F"
 
+
 class RolEnum(enum.Enum):
     user = "user"
     band = "band"
@@ -61,12 +63,6 @@ class UserToken(SQLAlchemyBase):
     user_id = Column(Integer, ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     user = relationship("User", back_populates="tokens")
 
-class Instruments(SQLAlchemyBase, JSONModel):
-    __tablename__ = "instruments"
-
-    id_instrument = Column(Integer, unique=True)
-    name = Column(Unicode(50), primary_key=True)
-
     @hybrid_property
     def json_model(self):
         return {
@@ -74,14 +70,25 @@ class Instruments(SQLAlchemyBase, JSONModel):
             "name": self.name
         }
 
-AssociationUserInstruments = Table("user_instruments", SQLAlchemyBase.metadata,
-                                   Column("id_user", Integer,
-                                          ForeignKey("users.id", onupdate="CASCAE", ondelete="CASCADE"),
-                                          nullable=False),
-                                   Column("name", Unicode(50)),
-                                          ForeignKey("instruments.name", onupdate="CASCADE", ondelete="CASCADE"),
-                                   Column("expirience", Integer),
-                                   )
+class AssociationUserInstruments(SQLAlchemyBase, JSONModel):
+    __tablename__ = "user-instruments-association"
+
+    id_user = Column(Integer, ForeignKey("users.id",
+                     onupdate="CASCADE", ondelete="CASCADE"),
+                     nullable=False, primary_key=True)
+    id_instrument = Column(Integer, ForeignKey("instruments.id_instrument",
+                           onupdate="CASCADE", ondelete="CASCADE"),
+                           nullable=False, primary_key=True)
+    expirience = Column(Integer, nullable=False)
+
+    usersInstruments = relationship("Instruments")
+
+
+class Instruments(SQLAlchemyBase, JSONModel):
+    __tablename__ = "instruments"
+
+    id_instrument = Column(Integer, primary_key=True)
+    name = Column(Unicode(50), unique=True)
 
 
 class User(SQLAlchemyBase, JSONModel):
@@ -104,8 +111,7 @@ class User(SQLAlchemyBase, JSONModel):
     gps = Column(UnicodeText, nullable=False)
     description = Column(Unicode(255))
 
-    user_instruments = relationship("Instruments", secondary= AssociationUserInstruments)
-
+    user_instruments = relationship("AssociationUserInstruments")
 
     @hybrid_property
     def public_profile(self):
@@ -162,9 +168,8 @@ class User(SQLAlchemyBase, JSONModel):
             "gps": self.gps,
         }
 
-        
-# ------------------- MODELOS INSTRUMENTOS ------------------------
 
+# ------------------- MODELOS INSTRUMENTOS ------------------------
 
 
 # ------------------- MODELOS Generes ------------------------
@@ -180,11 +185,3 @@ class MusicalGenere(SQLAlchemyBase, JSONModel):
             "id": self.id,
             "name": self.name
         }
-
-
-
-        
-    
-
-    
-    

@@ -9,8 +9,8 @@ from sqlalchemy.sql import text
 
 import db
 import settings
-from db.models import SQLAlchemyBase, User, GenereEnum, UserToken, RolEnum
-from db.models import  UserInstruments, Instruments, UserMusicalGeneres, MusicalGenere
+from db.models import SQLAlchemyBase, User, GenereEnum, UserToken, RolEnum, AssociationUserInstruments
+from db.models import Instruments, MusicalGenere
 from settings import DEFAULT_LANGUAGE
 
 # LOGGING
