@@ -13,7 +13,7 @@ from urllib.parse import urljoin
 import falcon
 from passlib.hash import pbkdf2_sha256
 from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, Unicode, \
-    UnicodeText, Boolean, Table
+    UnicodeText, Boolean, Table, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import relationship
@@ -90,6 +90,11 @@ class Instruments(SQLAlchemyBase, JSONModel):
     id_instrument = Column(Integer, primary_key=True)
     name = Column(Unicode(50), unique=True)
 
+AssociationUserMusicalGenere  = Table('user-musicalgeneres-association', SQLAlchemyBase.metadata,
+                                Column('id_user' ,Integer, ForeignKey('users.id',
+                                onupdate="CASCADE", ondelete="CASCADE"),nullable=False),
+                                Column('id_genere',Integer, ForeignKey('musicalgeneres.id',
+                                onupdate="CASCADE", ondelete="CASCADE"),nullable=False, primary_key=True))
 
 class User(SQLAlchemyBase, JSONModel):
     __tablename__ = "users"
@@ -112,6 +117,7 @@ class User(SQLAlchemyBase, JSONModel):
     description = Column(Unicode(255))
 
     user_instruments = relationship("AssociationUserInstruments")
+    user_musicalgeneres = relationship("MusicalGenere", secondary=AssociationUserMusicalGenere)
 
     @hybrid_property
     def public_profile(self):
@@ -173,6 +179,7 @@ class User(SQLAlchemyBase, JSONModel):
 
 
 # ------------------- MODELOS Generes ------------------------
+
 class MusicalGenere(SQLAlchemyBase, JSONModel):
     __tablename__ = "musicalgeneres"
 

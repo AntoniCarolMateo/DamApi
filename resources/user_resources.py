@@ -139,7 +139,36 @@ class ResourceRemoveInstrument(DAMCoreResource):
 class ResourceAddGenere(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAddGenere, self).on_post(req, resp, *args, **kwargs)
-        pass
+
+        current_user = req.context["auth_user"]
+
+        if "name" in kwargs:
+            aux_musicalgenere = self.db_session.query(MusicalGenere).filter(MusicalGenere.name == kwargs["name"]).one()
+
+        current_user.user_musicalgeneres.append(aux_musicalgenere)
+
+        self.db_session.commit()
+        resp.status = falcon.HTTP_200
+
+
+@falcon.before(requires_auth)
+class ResourceAddGeneres(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceAddGeneres, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        if req.media["list_generes"] is not None:
+            aux_list = req.media["list_generes"]
+
+            for i in range(len(aux_list)):
+                aux_genere_name = aux_list.pop(i - 1)
+                aux_musicalgenere = self.db_session.query(MusicalGenere). \
+                    filter(MusicalGenere.name == aux_genere_name).one()
+                current_user.user_musicalgeneres.append(aux_musicalgenere)
+
+        self.db_session.commit()
+        resp.status = falcon.HTTP_200
 
 
 @falcon.before(requires_auth)
