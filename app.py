@@ -44,7 +44,7 @@ application.add_route("/users/all", user_resources.ResourceGetUsers())
 #------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
 application.add_route("/users/profile/addInstrument", user_resources.ResourceAddInstrument())
 application.add_route("/users/profile/getInstrumentList", user_resources.ResourceGetTableInstruments())
-application.add_route("/users/profile/deleteInstrument", user_resources.ResourceRemoveInstrument())
+application.add_route("/users/profile/deleteInstrument/{name}", user_resources.ResourceRemoveInstrument())
 
 #------------------------------- GESTIÓN USER-GENERES ------------------------------------------#
 application.add_route("/users/profile/addGenere/{name}", user_resources.ResourceAddGenere())

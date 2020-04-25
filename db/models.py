@@ -70,18 +70,19 @@ class UserToken(SQLAlchemyBase):
             "name": self.name
         }
 
+
 class AssociationUserInstruments(SQLAlchemyBase, JSONModel):
     __tablename__ = "user-instruments-association"
 
     id_user = Column(Integer, ForeignKey("users.id",
-                     onupdate="CASCADE", ondelete="CASCADE"),
+                                         onupdate="CASCADE", ondelete="CASCADE"),
                      nullable=False, primary_key=True)
     id_instrument = Column(Integer, ForeignKey("instruments.id_instrument",
-                           onupdate="CASCADE", ondelete="CASCADE"),
+                                               onupdate="CASCADE", ondelete="CASCADE"),
                            nullable=False, primary_key=True)
     expirience = Column(Integer, nullable=False)
 
-    usersInstruments = relationship("Instruments")
+    assoc_instruments = relationship("Instruments")
 
 
 class Instruments(SQLAlchemyBase, JSONModel):
@@ -90,11 +91,16 @@ class Instruments(SQLAlchemyBase, JSONModel):
     id_instrument = Column(Integer, primary_key=True)
     name = Column(Unicode(50), unique=True)
 
-AssociationUserMusicalGenere  = Table('user-musicalgeneres-association', SQLAlchemyBase.metadata,
-                                Column('id_user' ,Integer, ForeignKey('users.id',
-                                onupdate="CASCADE", ondelete="CASCADE"),nullable=False),
-                                Column('id_genere',Integer, ForeignKey('musicalgeneres.id',
-                                onupdate="CASCADE", ondelete="CASCADE"),nullable=False, primary_key=True))
+
+
+AssociationUserMusicalGenere = Table('user-musicalgeneres-association', SQLAlchemyBase.metadata,
+                                     Column('id_user', Integer, ForeignKey('users.id',
+                                                                           onupdate="CASCADE", ondelete="CASCADE"),
+                                            nullable=False),
+                                     Column('id_genere', Integer, ForeignKey('musicalgeneres.id',
+                                                                             onupdate="CASCADE", ondelete="CASCADE"),
+                                            nullable=False, primary_key=True))
+
 
 class User(SQLAlchemyBase, JSONModel):
     __tablename__ = "users"

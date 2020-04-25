@@ -99,21 +99,22 @@ class ResourceAddInstrument(DAMCoreResource):
         # Init association
         association = AssociationUserInstruments()
 
-        # Get input instrument
-        if req.media["name"] is not None:
-            aux_instrument_name = req.media["name"]
+        try:
+            if req.media["name"] is not None:
+                aux_instrument_name = req.media["name"]
 
-        # Query to get the instrument data from Instruments table
-        aux_instrument = self.db_session.query(Instruments). \
-            filter(Instruments.name == aux_instrument_name).one()
+            # Query to get the instrument data from Instruments table
+            aux_instrument = self.db_session.query(Instruments). \
+                filter(Instruments.name == aux_instrument_name).one()
+        except NoResultFound:
+            raise falcon.HTTPBadRequest(description=messages.instrument_dont_exist)
 
         # Set none constrained columns, expirience
         if req.media["expirience"] is not None:
             association.expirience = req.media["expirience"]
 
         # Inserting the instrument into the relationship
-        association.usersInstruments = aux_instrument
-
+        association.assoc_instruments = aux_instrument
         # Finally we save our instrument with his expirience in ot user
         current_user.user_instruments.append(association)
 
@@ -132,7 +133,19 @@ class ResourceGetTableInstruments(DAMCoreResource):
 class ResourceRemoveInstrument(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceRemoveInstrument, self).on_post(req, resp, *args, **kwargs)
-        pass
+
+        current_user = req.context["auth_user"]
+
+        if "name" in kwargs:
+            query = self.db_session.query(AssociationUserInstruments).join(Instruments)
+            aux_instrument = query.\
+                filter(Instruments.name == kwargs["name"]).one()
+
+            print(aux_instrument.id_instrument)
+
+        self.db_session.delete(aux_instrument)
+        self.db_session.commit()
+        resp.status = falcon.HTTP_200
 
 
 @falcon.before(requires_auth)
