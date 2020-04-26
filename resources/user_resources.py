@@ -126,13 +126,27 @@ class ResourceAddInstrument(DAMCoreResource):
 class ResourceGetTableInstruments(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
         super(ResourceGetTableInstruments, self).on_get(req, resp, *args, **kwargs)
-        pass
+
+        # @JORDI: Si em poguesis aconsellar, o donar uns tips, alhora de
+        #         fer una query de la llista de instruments
+        #
+        #         Cada ROW tindría = Instrument.name, AssociationUserInstrument.expirience
+        #
+        #        m'agradría fer-ho de la millor manera.
+
+       pass
 
 
 @falcon.before(requires_auth)
 class ResourceRemoveInstrument(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceRemoveInstrument, self).on_post(req, resp, *args, **kwargs)
+
+        # @JORDI: Fixat en aquet exemplex,la taula Associació, és un
+        #         objecte Associador, per a permetre l'incorporació de la columna
+        #         experiència.
+        #         - Ja que es un objecte Mapejat a la base de dades, eliminar
+        #           es una feina fácil
 
         current_user = req.context["auth_user"]
 
@@ -169,6 +183,8 @@ class ResourceAddGeneres(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAddGeneres, self).on_post(req, resp, *args, **kwargs)
 
+
+    
         current_user = req.context["auth_user"]
 
         if req.media["list_generes"] is not None:
@@ -188,6 +204,14 @@ class ResourceAddGeneres(DAMCoreResource):
 class ResourceGetGenereList(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
         super(ResourceGetGenereList, self).on_get(req, resp, *args, **kwargs)
+
+        # @JORDI: Si em poguesis aconsellar, o donar uns tips, alhora de
+        #         fer una query de la llista de instruments
+        #
+        #         Cada ROW tindría = Instrument.name, AssociationUserInstrument.expirience
+        #
+        #        m'agradría fer-ho de la millor manera.
+
         pass
 
 
@@ -195,4 +219,24 @@ class ResourceGetGenereList(DAMCoreResource):
 class ResourceRemoveGenere(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceRemoveGenere, self).on_post(req, resp, *args, **kwargs)
-        pass
+
+        # @JORDI: Aquí esta el problema, en aquet cas no es un objecte mapejat
+        #         llavors s'hauría de esborrar la relació entre User y Instruments
+        #         M'agradriá saber el métode més eficaç, ya que n'he estat buscant
+        #         I tots no complíen amb el que vui fer ---  Esborrar un génere per el seu nom introduit ---
+
+        current_user = req.context["auth_user"]
+
+        if "name" in kwargs:
+            if __name__ == '__main__':
+
+                # busquem el genere introduit per a esborrar
+
+                aux_genere = self.db_session.query(MusicalGenere). \
+                                filter(MusicalGenere.name == kwargs["name"]).one()
+
+
+        self.db_session.commit()
+        resp.status = falcon.HTTP_200
+
+

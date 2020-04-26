@@ -51,6 +51,6 @@ application.add_route("/users/profile/addGenere/{name}", user_resources.Resource
 application.add_route("/users/profile/addGeneres", user_resources.ResourceAddGeneres())
 
 application.add_route("/users/profile/getGenereList", user_resources.ResourceGetGenereList())
-application.add_route("/users/profile/removeGenere", user_resources.ResourceRemoveGenere())
+application.add_route("/users/profile/removeGenere/{name}", user_resources.ResourceRemoveGenere())
 
 application.add_sink(handle_404, "")

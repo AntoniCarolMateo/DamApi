@@ -108,7 +108,10 @@ class ResourceAccountUpdateUserProfile(DAMCoreResource):
             current_user.description = req.media["description"]
 
         if req.media["birthdate"] is not None:
-            aux_birthdate = req.media["birthdate"]
+            str_birthdate = req.media["birthdate"]
+            aux_birthdate = datetime.strptime(str_birthdate, "%Y-%m-%d")
+
+            current_user.birthdate = aux_birthdate
 
         if req.media["gender"] is not None:
             aux_gender = req.media["gender"]

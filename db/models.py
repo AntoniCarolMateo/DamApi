@@ -85,6 +85,9 @@ class AssociationUserInstruments(SQLAlchemyBase, JSONModel):
     assoc_instruments = relationship("Instruments")
 
 
+
+
+
 class Instruments(SQLAlchemyBase, JSONModel):
     __tablename__ = "instruments"
 
