@@ -129,12 +129,11 @@ class ResourceGetTableInstruments(DAMCoreResource):
 
         # @JORDI: Si em poguesis aconsellar, o donar uns tips, alhora de
         #         fer una query de la llista de instruments
-        #
         #         Cada ROW tindría = Instrument.name, AssociationUserInstrument.expirience
-        #
-        #        m'agradría fer-ho de la millor manera.
+        #   m'agradría fer-ho de la millor manera
 
-       pass
+
+        pass
 
 
 @falcon.before(requires_auth)
