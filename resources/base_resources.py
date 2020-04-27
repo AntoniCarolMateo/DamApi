@@ -26,3 +26,6 @@ class DAMCoreResource(object):
 
     def on_head(self, req, resp, *args, **kwargs):
         self.__print_request(req)
+
+    def on_delete(self, req, resp, *args, **kwargs):
+        self.__print_request(req)
