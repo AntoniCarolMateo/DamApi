@@ -97,7 +97,6 @@ class ResourceAddInstrument(DAMCoreResource):
 
         current_user = req.context["auth_user"]
 
-
         try:
             for instrument in req.media:
                 print(instrument)
@@ -110,8 +109,8 @@ class ResourceAddInstrument(DAMCoreResource):
 
                     user_exp_instrument = \
                         self.db_session.query(AssociationUserInstruments).filter(
-                        AssociationUserInstruments.id_user == current_user.id,
-                        AssociationUserInstruments.id_instrument == aux_instrument.id_instrument
+                            AssociationUserInstruments.id_user == current_user.id,
+                            AssociationUserInstruments.id_instrument == aux_instrument.id_instrument
                         ).all()
 
                     if len(user_exp_instrument) == 0:
@@ -126,14 +125,11 @@ class ResourceAddInstrument(DAMCoreResource):
                         print("El usuari tiene ya experiencia, simplemente actualizo")
                         user_exp_instrument[0].expirience = instrument["expirience"]
 
-
-
             self.db_session.commit()
             resp.status = falcon.HTTP_200
 
         except NoResultFound:
             raise falcon.HTTPBadRequest(description=messages.instrument_dont_exist)
-
 
 
 @falcon.before(requires_auth)
@@ -184,7 +180,7 @@ class ResourceRemoveInstrument(DAMCoreResource):
             raise falcon.HTTPBadRequest(description=messages.instrument_dont_exist)
 
 
-#Seguir model instruments
+# Seguir model instruments
 @falcon.before(requires_auth)
 class ResourceAddGeneres(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
@@ -204,20 +200,30 @@ class ResourceAddGeneres(DAMCoreResource):
         self.db_session.commit()
         resp.status = falcon.HTTP_200
 
-# Seguir model instrument
+
 @falcon.before(requires_auth)
 class ResourceGetGenereList(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
         super(ResourceGetGenereList, self).on_get(req, resp, *args, **kwargs)
 
-        # @JORDI: Si em poguesis aconsellar, o donar uns tips, alhora de
-        #         fer una query de la llista de instruments
-        #
-        #         Cada ROW tindría = Instrument.name, AssociationUserInstrument.expirience
-        #
-        #        m'agradría fer-ho de la millor manera.
+        current_user = req.context["auth_user"]
 
-        pass
+        user_musicalGenere_query = self.db_session.query(AssociationUserMusicalGenere, MusicalGenere.name). \
+            join(MusicalGenere) \
+            .filter(AssociationUserMusicalGenere.id_user == current_user.id)
+
+        response_musical_generes = list()
+        aux_response = user_musicalGenere_query.all()
+
+        if aux_response is not None:
+            for current_musical_genere in aux_response:
+                response = {
+                    'musical_genere': current_musical_genere[1]
+                }
+                response_musical_generes.append(response)
+
+        resp.media = response_musical_generes
+        resp.status = falcon.HTTP_200
 
 
 @falcon.before(requires_auth)
@@ -225,15 +231,9 @@ class ResourceRemoveGenere(DAMCoreResource):
     def on_delete(self, req, resp, *args, **kwargs):
         super(ResourceRemoveGenere, self).on_delete(req, resp, *args, **kwargs)
 
-        # @JORDI: Aquí esta el problema, en aquet cas no es un objecte mapejat
-        #         llavors s'hauría de esborrar la relació entre User y Instruments
-        #         M'agradriá saber el métode més eficaç, ya que n'he estat buscant
-        #         I tots no complíen amb el que vui fer ---  Esborrar un génere per el seu nom introduit ---
-
         current_user = req.context["auth_user"]
 
         if "name" in kwargs:
-
             musical_genere = self.db_session.query(MusicalGenere) \
                 .filter(MusicalGenere.name == kwargs["name"]).one()
 
