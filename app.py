@@ -39,18 +39,16 @@ application.add_route("/account/update_profile", account_resources.ResourceAccou
 
 application.add_route("/users/register", user_resources.ResourceRegisterUser())
 application.add_route("/users/show/{username}", user_resources.ResourceGetUserProfile())
-application.add_route("/users/all", user_resources.ResourceGetUsers())
+application.add_route("/users/list", user_resources.ResourceGetUsers())
 
 #------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
-application.add_route("/users/profile/addInstrument", user_resources.ResourceAddInstrument())
-application.add_route("/users/profile/getInstrumentList", user_resources.ResourceGetTableInstruments())
-application.add_route("/users/profile/deleteInstrument/{name}", user_resources.ResourceRemoveInstrument())
+application.add_route("/users/profile/instruments/add", user_resources.ResourceAddInstrument())
+application.add_route("/users/profile/instruments/list", user_resources.ResourceGetTableInstruments())
+application.add_route("/users/profile/instruments/delete/{name}", user_resources.ResourceRemoveInstrument())
 
 #------------------------------- GESTIÓN USER-GENERES ------------------------------------------#
-application.add_route("/users/profile/addGenere/{name}", user_resources.ResourceAddGenere())
-application.add_route("/users/profile/addGeneres", user_resources.ResourceAddGeneres())
-
-application.add_route("/users/profile/getGenereList", user_resources.ResourceGetGenereList())
-application.add_route("/users/profile/removeGenere/{name}", user_resources.ResourceRemoveGenere())
+application.add_route("/users/profile/genere/add", user_resources.ResourceAddGeneres())
+application.add_route("/users/profile/musical_genres/list", user_resources.ResourceGetGenereList())
+application.add_route("/users/profile/musical_genres/delete/{name}", user_resources.ResourceRemoveGenere())
 
 application.add_sink(handle_404, "")
