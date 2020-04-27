@@ -210,7 +210,7 @@ class ResourceGetGenereList(DAMCoreResource):
 
         user_musicalGenere_query = self.db_session.query(AssociationUserMusicalGenere, MusicalGenere.name). \
             join(MusicalGenere) \
-            .filter(AssociationUserMusicalGenere.id_user == current_user.id)
+            .filter(AssociationUserMusicalGenere.c.id_user == current_user.id)
 
         response_musical_generes = list()
         aux_response = user_musicalGenere_query.all()
@@ -218,7 +218,7 @@ class ResourceGetGenereList(DAMCoreResource):
         if aux_response is not None:
             for current_musical_genere in aux_response:
                 response = {
-                    'musical_genere': current_musical_genere[1]
+                    'musical_genere': current_musical_genere[2]
                 }
                 response_musical_generes.append(response)
 

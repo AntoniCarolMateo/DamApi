@@ -85,6 +85,9 @@ class AssociationUserInstruments(SQLAlchemyBase, JSONModel):
     assoc_instruments = relationship("Instruments")
 
 
+
+
+
 class Instruments(SQLAlchemyBase, JSONModel):
     __tablename__ = "instruments"
 
@@ -92,31 +95,14 @@ class Instruments(SQLAlchemyBase, JSONModel):
     name = Column(Unicode(50), unique=True)
 
 
-class AssociationUserMusicalGenere(SQLAlchemyBase, JSONModel):
-    __tablename__ = 'user-musicalgeneres-association'
 
-    id_user = Column('id_user', Integer, ForeignKey('users.id',
-                                                    onupdate="CASCADE", ondelete="CASCADE"),
-                     nullable=False, primary_key=True)
-    id_genere = Column('id_genere', Integer, ForeignKey('musicalgeneres.id',
-                                                        onupdate="CASCADE", ondelete="CASCADE"),
-                       nullable=False, primary_key=True)
-
-    assoc_musical_generes= relationship("MusicalGenere")
-
-class MusicalGenere(SQLAlchemyBase, JSONModel):
-    __tablename__ = "musicalgeneres"
-
-    id = Column(Integer, primary_key="true")
-    name = Column(Unicode(50))
-
-    @hybrid_property
-    def json_model(self):
-        return {
-            "id": self.id,
-            "name": self.name
-        }
-
+AssociationUserMusicalGenere = Table('user-musicalgeneres-association', SQLAlchemyBase.metadata,
+                                     Column('id_user', Integer, ForeignKey('users.id',
+                                                                           onupdate="CASCADE", ondelete="CASCADE"),
+                                            nullable=False),
+                                     Column('id_genere', Integer, ForeignKey('musicalgeneres.id',
+                                                                             onupdate="CASCADE", ondelete="CASCADE"),
+                                            nullable=False, primary_key=True))
 
 
 class User(SQLAlchemyBase, JSONModel):
@@ -140,7 +126,7 @@ class User(SQLAlchemyBase, JSONModel):
     description = Column(Unicode(255))
 
     user_instruments = relationship("AssociationUserInstruments")
-    user_musicalgeneres = relationship("AssociationUserMusicalGenere")
+    user_musicalgeneres = relationship("MusicalGenere", secondary=AssociationUserMusicalGenere)
 
     @hybrid_property
     def public_profile(self):
@@ -203,3 +189,15 @@ class User(SQLAlchemyBase, JSONModel):
 
 # ------------------- MODELOS Generes ------------------------
 
+class MusicalGenere(SQLAlchemyBase, JSONModel):
+    __tablename__ = "musicalgeneres"
+
+    id = Column(Integer, primary_key="true")
+    name = Column(Unicode(50))
+
+    @hybrid_property
+    def json_model(self):
+        return {
+            "id": self.id,
+            "name": self.name
+        }
