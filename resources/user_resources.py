@@ -12,7 +12,7 @@ from sqlalchemy.orm.exc import NoResultFound
 import phonenumbers
 
 import messages
-from db.models import User, Instruments, MusicalGenere, AssociationUserInstruments, AssociationUserMusicalGenere
+from db.models import User, Instruments, MusicalGenere, AssociationUserInstruments, AssociationUserMusicalGenre
 from hooks import requires_auth
 from resources.base_resources import DAMCoreResource
 from resources.schemas import SchemaRegisterUser
@@ -99,10 +99,10 @@ class ResourceAddInstrument(DAMCoreResource):
 
         try:
             for instrument in req.media:
-                print(instrument)
-                if (instrument["name"] and instrument["expirience"]) is not None:
+                print(req.media)
+                if (instrument['name'] and instrument['expirience']) is not None:
 
-                    aux_instrument_name = instrument["name"]
+                    aux_instrument_name = instrument['name']
 
                     aux_instrument = self.db_session.query(Instruments). \
                         filter(Instruments.name == aux_instrument_name).one()
@@ -164,13 +164,16 @@ class ResourceRemoveInstrument(DAMCoreResource):
         super(ResourceRemoveInstrument, self).on_delete(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
+        print("vhivat")
         try:
             if "name" in kwargs:
+                print(kwargs["name"])
                 query = self.db_session.query(AssociationUserInstruments).join(Instruments)
                 aux_instrument = query. \
                     filter(Instruments.name == kwargs["name"],
                            AssociationUserInstruments.id_user == current_user.id).one()
                 self.db_session.delete(aux_instrument)
+                print(aux_instrument)
             self.db_session.commit()
             resp.status = falcon.HTTP_200
         except KeyError:
@@ -208,9 +211,9 @@ class ResourceGetGenereList(DAMCoreResource):
 
         current_user = req.context["auth_user"]
 
-        user_musicalGenere_query = self.db_session.query(AssociationUserMusicalGenere, MusicalGenere.name). \
+        user_musicalGenere_query = self.db_session.query(AssociationUserMusicalGenre, MusicalGenere.name). \
             join(MusicalGenere) \
-            .filter(AssociationUserMusicalGenere.c.id_user == current_user.id)
+            .filter(AssociationUserMusicalGenre.c.id_user == current_user.id)
 
         response_musical_generes = list()
         aux_response = user_musicalGenere_query.all()
@@ -237,9 +240,9 @@ class ResourceRemoveGenere(DAMCoreResource):
             musical_genere = self.db_session.query(MusicalGenere) \
                 .filter(MusicalGenere.name == kwargs["name"]).one()
 
-            d = AssociationUserMusicalGenere.delete().where(and_(
-                AssociationUserMusicalGenere.c.id_user == current_user.id,
-                AssociationUserMusicalGenere.c.id_genere == musical_genere.id
+            d = AssociationUserMusicalGenre.delete().where(and_(
+                AssociationUserMusicalGenre.c.id_user == current_user.id,
+                AssociationUserMusicalGenre.c.id_genere == musical_genere.id
             ))
 
             self.db_session.execute(d)

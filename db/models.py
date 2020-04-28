@@ -44,7 +44,7 @@ def _generate_media_url(class_instance, class_attibute_name, default_image=False
             return class_attribute
 
 
-class GenereEnum(enum.Enum):
+class GenreEnum(enum.Enum):
     male = "M"
     female = "F"
 
@@ -95,12 +95,11 @@ class Instruments(SQLAlchemyBase, JSONModel):
     name = Column(Unicode(50), unique=True)
 
 
-
-AssociationUserMusicalGenere = Table('user-musicalgeneres-association', SQLAlchemyBase.metadata,
-                                     Column('id_user', Integer, ForeignKey('users.id',
+AssociationUserMusicalGenre = Table('user-musicalgeneres-association', SQLAlchemyBase.metadata,
+                                    Column('id_user', Integer, ForeignKey('users.id',
                                                                            onupdate="CASCADE", ondelete="CASCADE"),
                                             nullable=False),
-                                     Column('id_genere', Integer, ForeignKey('musicalgeneres.id',
+                                    Column('id_genre', Integer, ForeignKey('musicalgeneres.id',
                                                                              onupdate="CASCADE", ondelete="CASCADE"),
                                             nullable=False, primary_key=True))
 
@@ -119,14 +118,14 @@ class User(SQLAlchemyBase, JSONModel):
     name = Column(Unicode(50))
     surname = Column(Unicode(50))
     birthdate = Column(Date)
-    genere = Column(Enum(GenereEnum))
+    genere = Column(Enum(GenreEnum))
     phone = Column(Unicode(50))
     photo = Column(Unicode(255))
     gps = Column(UnicodeText, nullable=False)
     description = Column(Unicode(255))
 
     user_instruments = relationship("AssociationUserInstruments")
-    user_musicalgeneres = relationship("MusicalGenere", secondary=AssociationUserMusicalGenere)
+    user_musicalgeneres = relationship("MusicalGenere", secondary=AssociationUserMusicalGenre)
 
     @hybrid_property
     def public_profile(self):
