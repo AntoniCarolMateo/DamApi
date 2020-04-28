@@ -87,13 +87,74 @@ class ResourceGetUsers(DAMCoreResource):
         resp.media = data
         resp.status = falcon.HTTP_200
 
+
+        
+# ------------------- Current user(auth) se convierte en seguidor de usuario por GET------------------------
+@falcon.before(requires_auth)
+class ResourceSubscribeUser(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceSubscribeUser, self).on_get(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        if "username" in kwargs:
+            try:
+                aux_user = self.db_session.query(User).filter(User.username == kwargs["username"]).one()
+                current_user.subscribed_to.append(aux_user)
+                resp.media = "OK"
+                self.db_session.add(current_user)
+                self.db_session.commit()
+                resp.status = falcon.HTTP_200
+            except NoResultFound:
+                raise falcon.HTTPBadRequest(description=messages.user_not_found)
+    
+
+# Devuelve los usuarios a los que este subscrito el current_user
+@falcon.before(requires_auth)
+class ResourceGetSubscribed(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceGetSubscribed, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        try:
+            data = []
+            for result in current_user.subscribed_to:
+                data.append(result.public_profile)
+            resp.media = data
+            resp.status = falcon.HTTP_200
+        except NoResultFound:
+            raise falcon.HTTPBadRequest(description='Error ResourceGetSubscribed')
+     
+     
+
+# Elimina de current_user una subscripcion
+@falcon.before(requires_auth)
+class ResourceDeleteSubscribed(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceDeleteSubscribed, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+        if "username" in kwargs:
+            
+            try:
+                current_user.subscribed_to[:] = [x for x in current_user.subscribed_to if x.username != kwargs["username"]]
+                self.db_session.add(current_user)
+                self.db_session.commit()
+
+                resp.media = "OK"
+                resp.status = falcon.HTTP_200
+            except NoResultFound:
+                raise falcon.HTTPBadRequest(description='Error ResourceDeleteSubscribed')
+
+
+
 #------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
 
 @falcon.before(requires_auth)
 class ResourceAddInstrument(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAddInstrument, self).on_post(req, resp, *args, **kwargs)
-        print("chivato")
 
         aux_instrument = UserInstruments()
 
@@ -256,16 +317,5 @@ class ResourceRemoveGenere(DAMCoreResource):
         resp.media = "removed"
         resp.status = falcon.HTTP_200
 
-
-
-        
-
-
-    
-
-
-
-     
-     
 
 

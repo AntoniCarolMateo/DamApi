@@ -87,6 +87,8 @@ if __name__ == "__main__":
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
 
+    user_admin.subscribed_to.append(user_1)
+    user_1.subscribed_to.append(user_2)
 
     # -------------------- CREATE Instruments --------------------
     mylogger.info("Creating instrumets data...")
