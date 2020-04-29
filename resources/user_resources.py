@@ -150,7 +150,7 @@ class ResourceGetTableInstruments(DAMCoreResource):
             for current_instrument in aux_response:
                 response = {
                     'expirience': current_instrument[0],
-                    'instrument:': current_instrument[1]
+                    'name': current_instrument[1]
                 }
                 response_instruments.append(response)
 
@@ -190,18 +190,23 @@ class ResourceAddGeneres(DAMCoreResource):
         super(ResourceAddGeneres, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
+        try:
+            for genre in req.media:
+                if genre["name"] is not None:
 
-        if req.media["list_generes"] is not None:
-            aux_list = req.media["list_generes"]
+                    aux_genre_name = genre["name"]
 
-            for name in aux_list:
-                aux_musical_genre = self.db_session.query(MusicalGenere). \
-                    filter(MusicalGenere.name == name).one()
-                if aux_musical_genre is not None:
-                    current_user.user_musicalgeneres.append(aux_musical_genre)
+                    aux_genre = self.db_session.query(MusicalGenere).\
+                        filter(MusicalGenere.name == aux_genre_name).one()
 
-        self.db_session.commit()
-        resp.status = falcon.HTTP_200
+                    if aux_genre is not None:
+                        current_user.user_musicalgeneres.append(aux_genre)
+
+            self.db_session.commit()
+            resp.status = falcon.HTTP_200
+
+        except NoResultFound:
+            raise falcon.HTTPBadRequest(description=messages.instrument_dont_exist)
 
 
 @falcon.before(requires_auth)
@@ -221,7 +226,7 @@ class ResourceGetGenereList(DAMCoreResource):
         if aux_response is not None:
             for current_musical_genere in aux_response:
                 response = {
-                    'musical_genere': current_musical_genere[2]
+                    'name': current_musical_genere[2]
                 }
                 response_musical_generes.append(response)
 
@@ -237,12 +242,13 @@ class ResourceRemoveGenere(DAMCoreResource):
         current_user = req.context["auth_user"]
 
         if "name" in kwargs:
+            print(kwargs["name"])
             musical_genere = self.db_session.query(MusicalGenere) \
                 .filter(MusicalGenere.name == kwargs["name"]).one()
 
             d = AssociationUserMusicalGenre.delete().where(and_(
                 AssociationUserMusicalGenre.c.id_user == current_user.id,
-                AssociationUserMusicalGenre.c.id_genere == musical_genere.id
+                AssociationUserMusicalGenre.c.id_genre == musical_genere.id
             ))
 
             self.db_session.execute(d)

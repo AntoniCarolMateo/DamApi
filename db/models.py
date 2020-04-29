@@ -101,7 +101,7 @@ AssociationUserMusicalGenre = Table('user-musicalgeneres-association', SQLAlchem
                                             nullable=False),
                                     Column('id_genre', Integer, ForeignKey('musicalgeneres.id',
                                                                              onupdate="CASCADE", ondelete="CASCADE"),
-                                            nullable=False, primary_key=True))
+                                            nullable=False))
 
 
 class User(SQLAlchemyBase, JSONModel):
