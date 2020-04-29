@@ -87,7 +87,33 @@ class ResourceGetUsers(DAMCoreResource):
         resp.media = data
         resp.status = falcon.HTTP_200
 
-        
+# ------------------- Da una info u otra del perfil, dependiendo de si current user esta subscrito a el user por parametro------------------------
+@falcon.before(requires_auth)
+class ResourceGetInfoSubscription(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceGetInfoSubscription, self).on_get(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        if "username" in kwargs:
+            try:
+                data = []
+                print("eeeeo")
+                is_subscribed = False
+                aux_user = self.db_session.query(User).filter(User.username == kwargs["username"]).one()
+                for user in current_user.subscribed_to:
+                    if user.username == aux_user.username:
+                        is_subscribed = True
+
+                data.append(aux_user.public_profile)
+                data.append({"subscribed" : is_subscribed})
+                resp.media  = data
+
+                resp.status = falcon.HTTP_200
+            except NoResultFound:
+                raise falcon.HTTPBadRequest(description='error en ResourceGetInfoSubscription')
+
+
 # ------------------- Current user(auth) se convierte en seguidor de usuario por GET------------------------
 @falcon.before(requires_auth)
 class ResourceSubscribeUser(DAMCoreResource):
