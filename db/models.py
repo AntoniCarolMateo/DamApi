@@ -12,8 +12,8 @@ from urllib.parse import urljoin
 
 import falcon
 from passlib.hash import pbkdf2_sha256
-from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, Unicode, \
-    UnicodeText, Boolean, Table, func
+from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, Unicode, UnicodeText, Boolean, Table
+
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
 from sqlalchemy.orm import relationship
@@ -104,6 +104,11 @@ AssociationUserMusicalGenre = Table('user-musicalgeneres-association', SQLAlchem
                                             nullable=False))
 
 
+seguidores = Table("seguimientos", SQLAlchemyBase.metadata,
+    Column("seguidor", Integer, ForeignKey("users.id"), primary_key=True),
+    Column("seguido", Integer, ForeignKey("users.id"), primary_key=True)
+
+
 class User(SQLAlchemyBase, JSONModel):
     __tablename__ = "users"
 
@@ -124,8 +129,12 @@ class User(SQLAlchemyBase, JSONModel):
     gps = Column(UnicodeText, nullable=False)
     description = Column(Unicode(255))
 
+
     user_instruments = relationship("AssociationUserInstruments")
     user_musicalgeneres = relationship("MusicalGenere", secondary=AssociationUserMusicalGenre)
+
+    subscribed_to = relationship("User",secondary=seguidores,primaryjoin=id==seguidores.c.seguidor,secondaryjoin=id==seguidores.c.seguido,backref="left_nodes")
+
 
     @hybrid_property
     def public_profile(self):

@@ -39,7 +39,12 @@ application.add_route("/account/update_profile", account_resources.ResourceAccou
 
 application.add_route("/users/register", user_resources.ResourceRegisterUser())
 application.add_route("/users/show/{username}", user_resources.ResourceGetUserProfile())
-application.add_route("/users/list", user_resources.ResourceGetUsers())
+
+application.add_route("/users/subscribe/{username}", user_resources.ResourceSubscribeUser())
+application.add_route("/users/delete_subscribed/{username}", user_resources.ResourceDeleteSubscribed())
+
+application.add_route("/users/all", user_resources.ResourceGetUsers())
+
 
 #------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
 application.add_route("/users/profile/instruments/add", user_resources.ResourceAddInstrument())
