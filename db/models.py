@@ -106,7 +106,7 @@ AssociationUserMusicalGenre = Table('user-musicalgeneres-association', SQLAlchem
 
 seguidores = Table("seguimientos", SQLAlchemyBase.metadata,
     Column("seguidor", Integer, ForeignKey("users.id"), primary_key=True),
-    Column("seguido", Integer, ForeignKey("users.id"), primary_key=True)
+    Column("seguido", Integer, ForeignKey("users.id"), primary_key=True))
 
 
 class User(SQLAlchemyBase, JSONModel):
