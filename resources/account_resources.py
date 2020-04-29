@@ -8,11 +8,10 @@ import falcon
 from falcon.media.validators import jsonschema
 
 from datetime import datetime
-
-
+import calendar
 
 import messages
-from db.models import User, UserToken, GenereEnum, RolEnum
+from db.models import User, UserToken, GenreEnum, RolEnum
 from hooks import requires_auth
 from resources.base_resources import DAMCoreResource
 from resources.schemas import SchemaUserToken
@@ -109,18 +108,20 @@ class ResourceAccountUpdateUserProfile(DAMCoreResource):
             current_user.description = req.media["description"]
 
         if req.media["birthdate"] is not None:
-           aux_birthdate = req.media["birthdate"]
-           current_user.birthdate = datetime.strptime(aux_birthdate, '%d-%m-%Y')
+            str_birthdate = req.media["birthdate"]
+            aux_birthdate = datetime.strptime(str_birthdate, "%Y-%m-%d")
+
+            current_user.birthdate = aux_birthdate
 
         if req.media["gender"] is not None:
             aux_gender = req.media["gender"]
             if aux_gender == "MALE":
-                current_user.genere = GenereEnum.male
+                current_user.genere = GenreEnum.male
             elif aux_gender == "FEMALE":
-                current_user.genere = GenereEnum.female
-
+                current_user.genere = GenreEnum.female
 
         self.db_session.add(current_user)
         self.db_session.commit()
 
         resp.status = falcon.HTTP_200
+

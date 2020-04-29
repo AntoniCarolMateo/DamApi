@@ -6,12 +6,13 @@ import re
 
 import falcon
 from falcon.media.validators import jsonschema
+from sqlalchemy import and_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 import phonenumbers
 
 import messages
-from db.models import User, UserInstruments, Instruments, UserMusicalGeneres, MusicalGenere
+from db.models import User, Instruments, MusicalGenere, AssociationUserInstruments, AssociationUserMusicalGenre
 from hooks import requires_auth
 from resources.base_resources import DAMCoreResource
 from resources.schemas import SchemaRegisterUser
@@ -44,7 +45,7 @@ class ResourceRegisterUser(DAMCoreResource):
             aux_user.password = req.media["password"]
             aux_user.username = req.media["username"]
             aux_user.gps = req.media["gps"]
-            
+
             email_validator = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
 
             try:
@@ -73,7 +74,6 @@ class ResourceRegisterUser(DAMCoreResource):
         resp.status = falcon.HTTP_200
 
 
-
 class ResourceGetUsers(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
         super(ResourceGetUsers, self).on_get(req, resp, *args, **kwargs)
@@ -86,7 +86,6 @@ class ResourceGetUsers(DAMCoreResource):
 
         resp.media = data
         resp.status = falcon.HTTP_200
-
 
         
 # ------------------- Current user(auth) se convierte en seguidor de usuario por GET------------------------
@@ -151,130 +150,124 @@ class ResourceDeleteSubscribed(DAMCoreResource):
 
 #------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
 
+
 @falcon.before(requires_auth)
 class ResourceAddInstrument(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAddInstrument, self).on_post(req, resp, *args, **kwargs)
 
-        aux_instrument = UserInstruments()
+        current_user = req.context["auth_user"]
 
         try:
-            # RECOGEMOS LOS VALORS, A PARTIR DE LA AUTENTICACIÓN QUE REQUIERE ESTA CALL,
-            # conseguimos el id del usuario que quiere añadir elementos
-            # --- req.media --- Cogemos del cuerpo JSON
+            for instrument in req.media:
+                print(req.media)
+                if (instrument['name'] and instrument['expirience']) is not None:
 
-            auth_user = req.context["auth_user"]
+                    aux_instrument_name = instrument['name']
 
-            aux_instrumentName = req.media["nameInstrument"]
-            aux_expirience = req.media["expirience"]
+                    aux_instrument = self.db_session.query(Instruments). \
+                        filter(Instruments.name == aux_instrument_name).one()
 
-            # mediante el String instrumento, hacemos una query para buscar su id
-            aux_idInstrument = self.db_session.query(Instruments).filter(Instruments.name == aux_instrumentName).one()
+                    user_exp_instrument = \
+                        self.db_session.query(AssociationUserInstruments).filter(
+                            AssociationUserInstruments.id_user == current_user.id,
+                            AssociationUserInstruments.id_instrument == aux_instrument.id_instrument
+                        ).all()
 
-            # Guardamos los valores en el objeto UserInstruments, para acutaliarlo en la base e datos
-            aux_instrument.id = auth_user.id
-            aux_instrument.id_instrument = aux_idInstrument.id_instrument
-            aux_instrument.expirience = aux_expirience
+                    if len(user_exp_instrument) == 0:
+                        # Init association
+                        association = AssociationUserInstruments()
+                        # Inserting the instrument into the relationship
+                        association.assoc_instruments = aux_instrument
+                        association.expirience = instrument["expirience"]
+                        # Finally we save our instrument with his expirience in ot user
+                        current_user.user_instruments.append(association)
+                    else:
+                        print("El usuari tiene ya experiencia, simplemente actualizo")
+                        user_exp_instrument[0].expirience = instrument["expirience"]
 
-            self.db_session.add(aux_instrument)
             self.db_session.commit()
+            resp.status = falcon.HTTP_200
 
-        except KeyError:
-            raise falcon.HTTPBadRequest(description=messages.parameters_invalid)
-
-        resp.status = falcon.HTTP_200
-
+        except NoResultFound:
+            raise falcon.HTTPBadRequest(description=messages.instrument_dont_exist)
 
 
 @falcon.before(requires_auth)
 class ResourceGetTableInstruments(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
         super(ResourceGetTableInstruments, self).on_get(req, resp, *args, **kwargs)
-        
+
         current_user = req.context["auth_user"]
-        data = []
 
-        #Comprovamos cuantos instrumentos tiene el usuario
-        count = self.db_session.query(UserInstruments).filter(UserInstruments.id == current_user.id).count()
-        print(count)
+        user_instruments_query = self.db_session.query(AssociationUserInstruments.expirience, Instruments.name).join(
+            Instruments).filter(
+            AssociationUserInstruments.id_user == current_user.id)
 
-        #recogemos los datos de estos
-        result = self.db_session.query(Instruments, UserInstruments.expirience).select_from(Instruments).filter(UserInstruments.id_instrument == Instruments.id_instrument).all()
+        response_instruments = list()
+        aux_response = user_instruments_query.all()
 
-        #A CADA FILA tenim 3 columnes, id_instrument, el seu nom, i la experiencia
-        #-------> row[0] = sifnifica la part qu té INSTRUMENT, nom e id.
-        #-------> row[1] = La par de USERINSTRUMENT, experiènicia
-        for i in range(count):
-            row = result.pop(i - 1)
-            json = row[0].json_model
-            json["expirience"] = row[1]
-            data.append(json)
-                
-        print(data)
+        if aux_response is not None:
+            for current_instrument in aux_response:
+                response = {
+                    'expirience': current_instrument[0],
+                    'name': current_instrument[1]
+                }
+                response_instruments.append(response)
 
-        resp.media = data
+        resp.media = response_instruments
         resp.status = falcon.HTTP_200
 
 
-
-# funcional, aún falta algunos retoques
 @falcon.before(requires_auth)
 class ResourceRemoveInstrument(DAMCoreResource):
-     def on_post(self, req, resp, *args, **kwargs):
-        super(ResourceRemoveInstrument, self).on_post(req, resp, *args, **kwargs)
+    def on_delete(self, req, resp, *args, **kwargs):
+        super(ResourceRemoveInstrument, self).on_delete(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
-
-        aux_instrumentName = req.media["nameInstrument"]
-
-        aux_idInstrument = self.db_session.query(Instruments).filter(Instruments.name == aux_instrumentName).one()
-
-        aux_instrument = self.db_session.query(UserInstruments).filter(UserInstruments.id_instrument == aux_idInstrument.id_instrument , UserInstruments.id == current_user.id).one()
-
-        print(aux_instrument.json_model)
-
-        self.db_session.delete(aux_instrument)
-        self.db_session.commit()
-
-
-        resp.media = "removed"
-        resp.status = falcon.HTTP_200
-
-       
-#------------------------------- GESTIÓN USER-GENERES ------------------------------------------#
-
-@falcon.before(requires_auth)
-class ResourceAddGenere(DAMCoreResource):
-    def on_post(self, req, resp, *args, **kwargs):
-        super(ResourceAddGenere, self).on_post(req, resp, *args, **kwargs)
-
-        current_user = req.context["auth_user"]
-        aux_genere = UserMusicalGeneres()
-
+        print("vhivat")
         try:
-            # RECOGEMOS LOS VALORS, A PARTIR DE LA AUTENTICACIÓN QUE REQUIERE ESTA CALL,
-            # conseguimos el id del usuario que quiere añadir elementos
-            # --- req.media --- Cogemos del cuerpo JSON
-
-            aux_nameGenere = req.media["nameGenere"]
-
-
-            aux_idGenere = self.db_session.query(MusicalGenere).filter(MusicalGenere.name == aux_nameGenere).one()
-
-            # Guardamos los valores en el objeto UserInstruments, para acutaliarlo en la base e datos
-            aux_genere.id_user =  current_user.id
-            aux_genere.id_genere= aux_idGenere.id
-            print(aux_genere.json_model)
-
-
-            self.db_session.add(aux_genere)
+            if "name" in kwargs:
+                print(kwargs["name"])
+                query = self.db_session.query(AssociationUserInstruments).join(Instruments)
+                aux_instrument = query. \
+                    filter(Instruments.name == kwargs["name"],
+                           AssociationUserInstruments.id_user == current_user.id).one()
+                self.db_session.delete(aux_instrument)
+                print(aux_instrument)
             self.db_session.commit()
-
+            resp.status = falcon.HTTP_200
         except KeyError:
             raise falcon.HTTPBadRequest(description=messages.parameters_invalid)
+        except NoResultFound:
+            # Aquest missatge es mostra si (instrument no existeix) o (instrument no es del usuari)
+            raise falcon.HTTPBadRequest(description=messages.instrument_dont_exist)
 
-        resp.status = falcon.HTTP_200
 
+# Seguir model instruments
+@falcon.before(requires_auth)
+class ResourceAddGeneres(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceAddGeneres, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+        try:
+            for genre in req.media:
+                if genre["name"] is not None:
+
+                    aux_genre_name = genre["name"]
+
+                    aux_genre = self.db_session.query(MusicalGenere).\
+                        filter(MusicalGenere.name == aux_genre_name).one()
+
+                    if aux_genre is not None:
+                        current_user.user_musicalgeneres.append(aux_genre)
+
+            self.db_session.commit()
+            resp.status = falcon.HTTP_200
+
+        except NoResultFound:
+            raise falcon.HTTPBadRequest(description=messages.instrument_dont_exist)
 
 
 @falcon.before(requires_auth)
@@ -283,39 +276,44 @@ class ResourceGetGenereList(DAMCoreResource):
         super(ResourceGetGenereList, self).on_get(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
-        data = []
 
-        count = self.db_session.query(UserMusicalGeneres).filter(UserMusicalGeneres.id_user == current_user.id).count()
+        user_musicalGenere_query = self.db_session.query(AssociationUserMusicalGenre, MusicalGenere.name). \
+            join(MusicalGenere) \
+            .filter(AssociationUserMusicalGenre.c.id_user == current_user.id)
 
-        result = self.db_session.query(MusicalGenere).filter(UserMusicalGeneres.id_genere == MusicalGenere.id).all()
+        response_musical_generes = list()
+        aux_response = user_musicalGenere_query.all()
 
-        for i in range(count):
-            row = result.pop(i - 1)
-            data.append(row.json_model)
+        if aux_response is not None:
+            for current_musical_genere in aux_response:
+                response = {
+                    'name': current_musical_genere[2]
+                }
+                response_musical_generes.append(response)
 
-        resp.media = data
+        resp.media = response_musical_generes
         resp.status = falcon.HTTP_200
+
 
 @falcon.before(requires_auth)
 class ResourceRemoveGenere(DAMCoreResource):
-     def on_post(self, req, resp, *args, **kwargs):
-        super(ResourceRemoveGenere, self).on_post(req, resp, *args, **kwargs)
+    def on_delete(self, req, resp, *args, **kwargs):
+        super(ResourceRemoveGenere, self).on_delete(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
 
-        aux_nameGenere = req.media["nameGenere"]
+        if "name" in kwargs:
+            print(kwargs["name"])
+            musical_genere = self.db_session.query(MusicalGenere) \
+                .filter(MusicalGenere.name == kwargs["name"]).one()
 
-        aux_idGenere = self.db_session.query(MusicalGenere).filter(MusicalGenere.name == aux_nameGenere).one()
+            d = AssociationUserMusicalGenre.delete().where(and_(
+                AssociationUserMusicalGenre.c.id_user == current_user.id,
+                AssociationUserMusicalGenre.c.id_genre == musical_genere.id
+            ))
 
-        aux_genere = self.db_session.query(UserMusicalGeneres).filter(
-            UserMusicalGeneres.id_genere == aux_idGenere.id,
-            UserMusicalGeneres.id_user == current_user.id).one()
+            self.db_session.execute(d)
 
-        self.db_session.delete(aux_genere)
         self.db_session.commit()
-
-        resp.media = "removed"
         resp.status = falcon.HTTP_200
-
-
 

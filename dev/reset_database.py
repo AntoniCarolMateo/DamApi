@@ -9,8 +9,8 @@ from sqlalchemy.sql import text
 
 import db
 import settings
-from db.models import SQLAlchemyBase, User, GenereEnum, UserToken, RolEnum
-from db.models import  UserInstruments, Instruments, UserMusicalGeneres, MusicalGenere
+from db.models import SQLAlchemyBase, User, GenreEnum, UserToken, RolEnum, AssociationUserInstruments
+from db.models import Instruments, MusicalGenere
 from settings import DEFAULT_LANGUAGE
 
 # LOGGING
@@ -38,8 +38,6 @@ if __name__ == "__main__":
     mylogger.info("Creating database...")
     SQLAlchemyBase.metadata.create_all(db.DB_ENGINE)
 
-
-
     # -------------------- CREATE USERS --------------------
     mylogger.info("Creating default users...")
     # noinspection PyArgumentList
@@ -49,15 +47,59 @@ if __name__ == "__main__":
         email="admin@damcore.com",
         name="Administrator",
         surname="DamCore",
-        genere=GenereEnum.male,
+        genere=GenreEnum.male,
         gps="42.090205,1.1504",
-        description="hola",
-
+        description="hola"
     )
     user_admin.set_password("DAMCoure")
 
+
+    # -------------------- CREATE Instruments --------------------
+    mylogger.info("Creating instrumets data...")
     # noinspection PyArgumentList
-    user_1= User(
+    instrument1 = Instruments(
+        name="Guitarra"
+    )
+    instrument2 = Instruments(
+        name="Trompeta"
+    )
+    instrument3 = Instruments(
+        name="Piano"
+    )
+    instrument4 = Instruments(
+        name="Maracas"
+    )
+    # -------------------- CREATE Generes --------------------
+
+    mylogger.info("CreatinMusicalGenere data...")
+    genere1 = MusicalGenere(
+        name="Rock"
+    )
+    genere2 = MusicalGenere(
+        name="Pop"
+    )
+    genere3 = MusicalGenere(
+        name="Country"
+    )
+    genere4 = MusicalGenere(
+        name="Metal"
+    )
+
+
+    usuari1_guitarra = AssociationUserInstruments(
+        id_user=2,
+        id_instrument=1,
+        expirience=4
+    )
+
+    usuari1_piano = AssociationUserInstruments(
+        id_user=2,
+        id_instrument=3,
+        expirience=2
+    )
+
+    # noinspection PyArgumentList
+    user_1 = User(
         created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
         username="usuari1",
         email="usuari1@gmail.com",
@@ -65,8 +107,9 @@ if __name__ == "__main__":
         surname="1",
         rol=RolEnum.user,
         birthdate=datetime.datetime(1989, 1, 1),
-        genere=GenereEnum.male,
+        genere=GenreEnum.male,
         gps="42.390205,3.1504",
+        user_musicalgeneres=[genere1, genere2]
     )
     user_1.set_password("a1s2d3f4")
     user_1.tokens.append(UserToken(token="656e50e154865a5dc469b80437ed2f963b8f58c8857b66c9bf"))
@@ -78,56 +121,22 @@ if __name__ == "__main__":
         email="user2@gmail.com",
         name="user",
         surname="2",
-        rol= RolEnum.band,
+        rol=RolEnum.band,
         birthdate=datetime.datetime(2017, 1, 1),
-        genere=GenereEnum.male,
+        genere=GenreEnum.male,
         gps="40.390205,2.5504",
-
+        user_musicalgeneres=[genere4]
     )
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
 
-    user_admin.subscribed_to.append(user_1)
-    user_1.subscribed_to.append(user_2)
+    # ----Adding Generes----#
+    db_session.add(genere1)
+    db_session.add(genere2)
+    db_session.add(genere3)
+    db_session.add(genere4)
 
-    # -------------------- CREATE Instruments --------------------
-    mylogger.info("Creating instrumets data...")
-    # noinspection PyArgumentList
-    instrument1 = Instruments(
-        id_instrument=1,
-        name="Guitarra"
-    )
-    instrument2 = Instruments(
-        id_instrument=2,
-        name="Trompeta"
-    )
-    instrument3 = Instruments(
-        id_instrument=3,
-        name="Piano"
-    )
-    instrument4 = Instruments(
-        id_instrument=4,
-        name="Maracas"
-    )
-    # -------------------- CREATE Generes --------------------
-
-    mylogger.info("CreatinMusicalGenere data...")
-    genere1 = MusicalGenere(
-        id=1,
-        name="Rock"
-    )
-    genere2 = MusicalGenere(
-        id=2,
-        name="Pop"
-    )
-    genere3 = MusicalGenere(
-        id=3,
-        name="Country"
-    )
-
-
-
-
+    # ----Adding Users----#
     db_session.add(user_admin)
     db_session.add(user_1)
     db_session.add(user_2)
@@ -138,10 +147,8 @@ if __name__ == "__main__":
     db_session.add(instrument3)
     db_session.add(instrument4)
 
-    # ----Adding Instruments----#
-    db_session.add(genere1)
-    db_session.add(genere2)
-    db_session.add(genere3)
+    db_session.add(usuari1_guitarra)
+    db_session.add(usuari1_piano)
     
     db_session.commit()
     db_session.close()
