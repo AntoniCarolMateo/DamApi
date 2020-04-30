@@ -49,7 +49,7 @@ if __name__ == "__main__":
         surname="DamCore",
         genere=GenreEnum.male,
         gps="42.090205,1.1504",
-        description="hola"
+        description="description admin"
     )
     user_admin.set_password("DAMCoure")
 
@@ -109,6 +109,7 @@ if __name__ == "__main__":
         birthdate=datetime.datetime(1989, 1, 1),
         genere=GenreEnum.male,
         gps="42.390205,3.1504",
+        description="description user1",
         user_musicalgeneres=[genere1, genere2]
     )
     user_1.set_password("a1s2d3f4")
@@ -125,6 +126,7 @@ if __name__ == "__main__":
         birthdate=datetime.datetime(2017, 1, 1),
         genere=GenreEnum.male,
         gps="40.390205,2.5504",
+        description="description user2",
         user_musicalgeneres=[genere4]
     )
     user_2.set_password("r45tgt")
