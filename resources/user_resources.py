@@ -126,7 +126,7 @@ class ResourceSubscribeUser(DAMCoreResource):
             try:
                 aux_user = self.db_session.query(User).filter(User.username == kwargs["username"]).one()
                 current_user.subscribed_to.append(aux_user)
-                resp.media = "OK"
+                resp.media = 1
                 self.db_session.add(current_user)
                 self.db_session.commit()
                 resp.status = falcon.HTTP_200
@@ -156,7 +156,7 @@ class ResourceGetSubscribed(DAMCoreResource):
 # Elimina de current_user una subscripcion
 @falcon.before(requires_auth)
 class ResourceDeleteSubscribed(DAMCoreResource):
-    def on_get(self, req, resp, *args, **kwargs):
+    def on_delete(self, req, resp, *args, **kwargs):
         super(ResourceDeleteSubscribed, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
@@ -167,7 +167,7 @@ class ResourceDeleteSubscribed(DAMCoreResource):
                 self.db_session.add(current_user)
                 self.db_session.commit()
 
-                resp.media = "OK"
+                resp.media = 1
                 resp.status = falcon.HTTP_200
             except NoResultFound:
                 raise falcon.HTTPBadRequest(description='Error ResourceDeleteSubscribed')
