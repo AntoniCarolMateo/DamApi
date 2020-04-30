@@ -125,3 +125,27 @@ class ResourceAccountUpdateUserProfile(DAMCoreResource):
 
         resp.status = falcon.HTTP_200
 
+@falcon.before(requires_auth)
+class ResourceCompletedFirstSetUp(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceCompletedFirstSetUp, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        ###TODO : COMPROVAMOS LOS PARÁMETROS DEL PERFIL MÁS IMPORTANTE
+
+        current_user.firstTime = False
+
+        self.db_session.add(current_user)
+        self.db_session.commit()
+        resp.status = falcon.HTTP_200
+
+@falcon.before(requires_auth)
+class ResourceGetFirstSetUp(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceGetFirstSetUp, self).on_get(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        resp.media = current_user.firstTime
+        resp.status = falcon.HTTP_200

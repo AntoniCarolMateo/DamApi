@@ -37,8 +37,12 @@ application.add_route("/account/delete_token", account_resources.ResourceDeleteU
 
 application.add_route("/account/update_profile", account_resources.ResourceAccountUpdateUserProfile())
 
+application.add_route("/account/profile/setfirstSetUp", account_resources.ResourceCompletedFirstSetUp())
+application.add_route("/account/profile/getfirstSetUp", account_resources.ResourceGetFirstSetUp())
+
 application.add_route("/users/register", user_resources.ResourceRegisterUser())
 application.add_route("/users/show/{username}", user_resources.ResourceGetUserProfile())
+
 
 application.add_route("/users/get_subscribed", user_resources.ResourceGetSubscribed())
 application.add_route("/users/get_info_by_subscription/{username}", user_resources.ResourceGetInfoSubscription())
