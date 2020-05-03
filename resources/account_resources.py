@@ -92,6 +92,21 @@ class ResourceAccountUserProfile(DAMCoreResource):
 
 
 @falcon.before(requires_auth)
+class ResourceAccountSetUsername(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceAccountSetUsername, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        if "username" in kwargs:
+            current_user.username = kwargs["username"]
+
+        self.db_session.add(current_user)
+        self.db_session.commit()
+        resp.status = falcon.HTTP_200
+
+
+@falcon.before(requires_auth)
 class ResourceAccountUpdateUserProfile(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
         super(ResourceAccountUpdateUserProfile, self).on_post(req, resp, *args, **kwargs)
