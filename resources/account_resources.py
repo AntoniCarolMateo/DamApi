@@ -103,7 +103,7 @@ class ResourceAccountUpdateUserProfile(DAMCoreResource):
         if req.media["surname"] is not None:
             current_user.surname = req.media["surname"]
         if req.media["expirience"] is not None:
-            current_user.expirience = req.media["expirience"]
+            current_user.gen_exp = req.media["expirience"]
         if req.media["description"] is not None:
             current_user.description = req.media["description"]
 
@@ -148,4 +148,14 @@ class ResourceGetFirstSetUp(DAMCoreResource):
         current_user = req.context["auth_user"]
 
         resp.media = current_user.firstTime
+        resp.status = falcon.HTTP_200
+
+@falcon.before(requires_auth)
+class ResourceAccountShowUserProfile(DAMCoreResource):
+    def on_get(self, req, resp, *args, **kwargs):
+        super(ResourceAccountShowUserProfile, self).on_get(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        resp.media = current_user.private_profile
         resp.status = falcon.HTTP_200

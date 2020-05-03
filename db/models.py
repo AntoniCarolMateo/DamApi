@@ -12,7 +12,7 @@ from urllib.parse import urljoin
 
 import falcon
 from passlib.hash import pbkdf2_sha256
-from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, Unicode, UnicodeText, Boolean, Table
+from sqlalchemy import Column, Date, DateTime, Enum, ForeignKey, Integer, Unicode, UnicodeText, Boolean, Table, Float
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_method, hybrid_property
@@ -128,6 +128,7 @@ class User(SQLAlchemyBase, JSONModel):
     photo = Column(Unicode(255))
     gps = Column(UnicodeText, nullable=False)
     description = Column(Unicode(255))
+    gen_exp = Column(Float)
 
 
     user_instruments = relationship("AssociationUserInstruments")
@@ -149,6 +150,25 @@ class User(SQLAlchemyBase, JSONModel):
             "genere": mgenere,
             "photo": self.photo,
             "gps": self.gps,
+            "description": self.description
+
+        }
+
+    @hybrid_property
+    def private_profile(self):
+        mgenere = self.genere
+        if mgenere is None:
+            mgenere = ""
+        else:
+            mgenere = self.genere.value
+        return {
+            "username": self.username,
+            "name": self.name,
+            "surname": self.surname,
+            "genere": mgenere,
+            "birthdate": self.birthdate.strftime(
+                settings.DATE_DEFAULT_FORMAT) if self.birthdate is not None else self.birthdate,
+            "gen_exp": self.gen_exp,
             "description": self.description
 
         }
@@ -189,7 +209,9 @@ class User(SQLAlchemyBase, JSONModel):
             "phone": self.phone,
             "photo": self.photo,
             "gps": self.gps,
+
         }
+
 
 
 # ------------------- MODELOS INSTRUMENTOS ------------------------
