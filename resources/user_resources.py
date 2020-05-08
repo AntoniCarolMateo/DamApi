@@ -73,13 +73,55 @@ class ResourceRegisterUser(DAMCoreResource):
 
         resp.status = falcon.HTTP_200
 
-
+@falcon.before(requires_auth)
 class ResourceGetUsers(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
         super(ResourceGetUsers, self).on_get(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        # Filtro OR &
+
+        request_genres = req.get_param("genres", False)
+        request_genres_list = list()
+        if request_genres is not None:
+            request_genres_list = request_genres.split(",")
+
+        request_instruments = req.get_param("instruments", False)
+        request_instruments_list = list()
+        if request_instruments is not None:
+            request_instruments_list = request_instruments.split(",")
+
+
         data = []
 
-        results = self.db_session.query(User).all()
+        query = self.db_session.query(User).filter(
+            User.id != current_user.id)
+
+        genres_list_filtered = list()
+        instruments_list_filtered = list()
+        results = list()
+
+        if request_genres is not None:
+            genres_list_filtered = query.join(AssociationUserMusicalGenre, MusicalGenere ).filter(
+                 MusicalGenere.name.in_(request_genres_list)).all()
+
+
+        if request_instruments is not None:
+            instruments_list_filtered = query.join(AssociationUserInstruments, Instruments).filter(
+                 Instruments.name.in_(request_instruments_list)).all()
+
+
+        if genres_list_filtered != []:
+            results = genres_list_filtered
+
+        if instruments_list_filtered != []:
+            results += instruments_list_filtered
+
+        results = set(results)
+
+        if request_genres is None and request_instruments is None:
+            results = query.all()
 
         for result in results:
             data.append(result.public_profile)
