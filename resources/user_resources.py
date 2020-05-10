@@ -73,6 +73,7 @@ class ResourceRegisterUser(DAMCoreResource):
 
         resp.status = falcon.HTTP_200
 
+
 @falcon.before(requires_auth)
 class ResourceGetUsers(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
@@ -83,14 +84,22 @@ class ResourceGetUsers(DAMCoreResource):
         # Filtro OR &
 
         request_genres = req.get_param("genres", False)
+        print(request_genres)
+
         request_genres_list = list()
         if request_genres is not None:
             request_genres_list = request_genres.split(",")
 
+
         request_instruments = req.get_param("instruments", False)
+
         request_instruments_list = list()
+        print(format(request_instruments))
+
         if request_instruments is not None:
             request_instruments_list = request_instruments.split(",")
+            print(format(request_instruments_list))
+
 
 
         data = []
@@ -126,7 +135,9 @@ class ResourceGetUsers(DAMCoreResource):
         for result in results:
             data.append(result.public_profile)
 
+
         resp.media = data
+
         resp.status = falcon.HTTP_200
 
 # ------------------- Da una info u otra del perfil, dependiendo de si current user esta subscrito a el user por parametro------------------------

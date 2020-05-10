@@ -7,6 +7,7 @@ import os
 
 from sqlalchemy.sql import text
 
+import json
 import db
 import settings
 from db.models import SQLAlchemyBase, User, GenreEnum, UserToken, RolEnum, AssociationUserInstruments
@@ -55,6 +56,7 @@ if __name__ == "__main__":
 
 
     # -------------------- CREATE Instruments --------------------
+
     mylogger.info("Creating instrumets data...")
     # noinspection PyArgumentList
     instrument1 = Instruments(

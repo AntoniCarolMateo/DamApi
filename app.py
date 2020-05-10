@@ -7,7 +7,7 @@ import falcon
 
 import messages
 import middlewares
-from resources import account_resources, common_resources, user_resources
+from resources import account_resources, common_resources, user_resources, data_app_resources
 from settings import configure_logging
 
 # LOGGING
@@ -64,5 +64,9 @@ application.add_route("/users/profile/instruments/delete/{name}", user_resources
 application.add_route("/users/profile/musical_genres/add", user_resources.ResourceAddGeneres())
 application.add_route("/users/profile/musical_genres/list", user_resources.ResourceGetGenereList())
 application.add_route("/users/profile/musical_genres/delete/{name}", user_resources.ResourceRemoveGenere())
+
+
+#------------------------------- Recursos para que la app este completa ------------------------------------------#
+application.add_route("/data/musical_genres/avalible", data_app_resources.ResourceDataMusicalGenres())
 
 application.add_sink(handle_404, "")
