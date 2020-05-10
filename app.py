@@ -53,7 +53,7 @@ application.add_route("/users/subscribe/{username}", user_resources.ResourceSubs
 application.add_route("/users/delete_subscribed/{username}", user_resources.ResourceDeleteSubscribed())
 
 application.add_route("/users/all", user_resources.ResourceGetUsers())
-
+application.add_route("/users/match", user_resources.ResourceGetUserMatch())
 
 #------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------#
 application.add_route("/users/profile/instruments/add", user_resources.ResourceAddInstrument())

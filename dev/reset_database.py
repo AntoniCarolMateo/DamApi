@@ -7,7 +7,6 @@ import os
 
 from sqlalchemy.sql import text
 
-import json
 import db
 import settings
 from db.models import SQLAlchemyBase, User, GenreEnum, UserToken, RolEnum, AssociationUserInstruments
@@ -56,7 +55,6 @@ if __name__ == "__main__":
 
 
     # -------------------- CREATE Instruments --------------------
-
     mylogger.info("Creating instrumets data...")
     # noinspection PyArgumentList
     instrument1 = Instruments(
@@ -88,12 +86,21 @@ if __name__ == "__main__":
     )
 
 
+    usuariadmin_guitarra = AssociationUserInstruments(
+        id_user=1,
+        id_instrument=1,
+        expirience=4
+    )
     usuari1_guitarra = AssociationUserInstruments(
         id_user=2,
         id_instrument=1,
         expirience=4
     )
-
+    usuari2_guitarra = AssociationUserInstruments(
+        id_user=3,
+        id_instrument=1,
+        expirience=4
+    )
     usuari1_piano = AssociationUserInstruments(
         id_user=2,
         id_instrument=3,
@@ -103,7 +110,7 @@ if __name__ == "__main__":
     # noinspection PyArgumentList
     user_1 = User(
         created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
-        username="usuari1",
+        username="34938030161",
         email="usuari1@gmail.com",
         name="usuari",
         surname="1",
@@ -112,10 +119,9 @@ if __name__ == "__main__":
         genere=GenreEnum.male,
         gps="42.390205,3.1504",
         description="description user1",
-        gen_exp=5.0,
         user_musicalgeneres=[genere1, genere2]
     )
-    user_1.set_password("a1s2d3f4")
+    user_1.set_password("1234")
     user_1.tokens.append(UserToken(token="656e50e154865a5dc469b80437ed2f963b8f58c8857b66c9bf"))
 
     # noinspection PyArgumentList
@@ -132,6 +138,7 @@ if __name__ == "__main__":
         description="description user2",
         gen_exp = 5.0,
         user_musicalgeneres=[genere4]
+        user_musicalgeneres=[genere4,genere2]
     )
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
@@ -157,7 +164,10 @@ if __name__ == "__main__":
     db_session.add(instrument4)
 
     db_session.add(usuari1_guitarra)
+    db_session.add(usuari2_guitarra)
+
     db_session.add(usuari1_piano)
-    
+    db_session.add(usuariadmin_guitarra)
+
     db_session.commit()
     db_session.close()
