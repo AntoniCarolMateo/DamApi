@@ -119,6 +119,7 @@ if __name__ == "__main__":
         genere=GenreEnum.male,
         gps="42.390205,3.1504",
         description="description user1",
+        firstTime=False,
         user_musicalgeneres=[genere1, genere2]
     )
     user_1.set_password("1234")
@@ -137,7 +138,6 @@ if __name__ == "__main__":
         gps="40.390205,2.5504",
         description="description user2",
         gen_exp = 5.0,
-        user_musicalgeneres=[genere4]
         user_musicalgeneres=[genere4,genere2]
     )
     user_2.set_password("r45tgt")
