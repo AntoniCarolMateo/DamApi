@@ -174,3 +174,26 @@ class ResourceAccountShowUserProfile(DAMCoreResource):
 
         resp.media = current_user.private_profile
         resp.status = falcon.HTTP_200
+
+
+@falcon.before(requires_auth)
+class ResourceAccountSetUserRole(DAMCoreResource):
+    def on_post(self, req, resp, *args, **kwargs):
+        super(ResourceAccountSetUserRole, self).on_post(req, resp, *args, **kwargs)
+
+        current_user = req.context["auth_user"]
+
+        if "rol" in kwargs:
+
+            aux_rol = kwargs["rol"]
+            print(aux_rol)
+            if aux_rol == "SOLO":
+                current_user.rol = RolEnum.user
+            elif aux_rol == "BAND":
+                current_user.rol = RolEnum.band
+            elif aux_rol == "PARTNER":
+                current_user.rol = RolEnum.sponsor
+        print(current_user.rol)
+        self.db_session.add(current_user)
+        self.db_session.commit()
+        resp.status = falcon.HTTP_200
