@@ -277,7 +277,7 @@ class ResourceGetUserMatch(DAMCoreResource):
            resultados_filtro_generos = resultados_filtro_instrumentos 
 
 
-
+        print(format(resultados_filtro_generos[0].public_profile))
         resp.media = resultados_filtro_generos[0].public_profile
         resp.status = falcon.HTTP_200
 
