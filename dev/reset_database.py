@@ -133,7 +133,6 @@ if __name__ == "__main__":
         email="user2@gmail.com",
         name="user",
         surname="2",
-        rol=RolEnum.band,
         birthdate=datetime.datetime(2017, 1, 1),
         genere=GenreEnum.male,
         gps="40.390205,2.5504",

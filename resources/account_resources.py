@@ -184,7 +184,6 @@ class ResourceAccountSetUserRole(DAMCoreResource):
         current_user = req.context["auth_user"]
 
         if "rol" in kwargs:
-
             aux_rol = kwargs["rol"]
             print(aux_rol)
             if aux_rol == "SOLO":
@@ -193,7 +192,7 @@ class ResourceAccountSetUserRole(DAMCoreResource):
                 current_user.rol = RolEnum.band
             elif aux_rol == "PARTNER":
                 current_user.rol = RolEnum.sponsor
-        print(current_user.rol)
+        print("ROl " + format(current_user.rol))
         self.db_session.add(current_user)
         self.db_session.commit()
         resp.status = falcon.HTTP_200
