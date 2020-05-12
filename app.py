@@ -37,6 +37,7 @@ application.add_route("/account/delete_token", account_resources.ResourceDeleteU
 
 application.add_route("/account/update_profile", account_resources.ResourceAccountUpdateUserProfile())
 application.add_route("/account/profile/setUsername/{username}", account_resources.ResourceAccountSetUsername())
+application.add_route("/account/profile/setUserRol/{rol}", account_resources.ResourceAccountSetUserRole())
 app.add_route("/account/profile/show", account_resources.ResourceAccountShowUserProfile())
 
 application.add_route("/account/profile/setfirstSetUp", account_resources.ResourceCompletedFirstSetUp())
