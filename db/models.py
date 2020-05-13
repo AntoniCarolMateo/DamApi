@@ -151,7 +151,8 @@ class User(SQLAlchemyBase, JSONModel):
             "photo": self.photo,
             "gps": self.gps,
             "description": self.description,
-            "gen_exp": self.gen_exp
+            "gen_exp": self.gen_exp,
+            "rol" : str(self.rol)
         }
 
     @hybrid_property

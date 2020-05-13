@@ -49,6 +49,8 @@ if __name__ == "__main__":
         surname="DamCore",
         genere=GenreEnum.male,
         gps="42.090205,1.1504",
+        rol=RolEnum.sponsor,
+        gen_exp=4.5,
         description="description admin"
     )
     user_admin.set_password("DAMCoure")
