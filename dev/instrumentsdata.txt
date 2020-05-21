@@ -1,0 +1,21 @@
+Bajo
+Batería
+Beatmaker
+Cajón
+Clarinete
+Fagot
+Guitarra Clásica
+Guitarra Eléctrica
+Oboé
+Piano Classico
+Piano Électrico
+Producción Musical
+Saxofono
+Tambor
+Trombón
+Trompeta
+Tuba
+Ukelele
+Violín
+Violonchelo
+Voz

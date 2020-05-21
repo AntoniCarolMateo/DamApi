@@ -1,0 +1,15 @@
+Bachata
+Blues
+Clásica
+Country
+Cumbia
+Disco
+Flamenco
+Heavy Metal
+Hip Hop
+Jazz
+Pop
+Reggae
+Rock and Roll
+Trap
+Salsa

@@ -38,6 +38,30 @@ if __name__ == "__main__":
     mylogger.info("Creating database...")
     SQLAlchemyBase.metadata.create_all(db.DB_ENGINE)
 
+    # -------------------- CREATE Instruments --------------------
+    mylogger.info("Creating instrumets data...")
+
+    ins_path = os.path.join(os.path.dirname(__file__), "instrumentsdata.txt")
+    file_ins = open(ins_path, "r")
+    Lines = file_ins.readlines()
+    for ins in Lines:
+        instrument = Instruments(
+            name=ins.strip()
+        )
+        db_session.add(instrument)
+
+    # -------------------- CREATE Generes --------------------
+    mylogger.info("Creating MusicalGenere data...")
+
+    gen_path = os.path.join(os.path.dirname(__file__), "musicalgenresdata.txt")
+    file_gen = open(gen_path, "r")
+    Lines = file_gen.readlines()
+    for genre in Lines:
+        genre = MusicalGenere(
+            name=genre.strip()
+        )
+        db_session.add(genre)
+
     # -------------------- CREATE USERS --------------------
     mylogger.info("Creating default users...")
     # noinspection PyArgumentList
@@ -55,60 +79,6 @@ if __name__ == "__main__":
     )
     user_admin.set_password("DAMCoure")
 
-
-    # -------------------- CREATE Instruments --------------------
-    mylogger.info("Creating instrumets data...")
-    # noinspection PyArgumentList
-    instrument1 = Instruments(
-        name="Guitarra"
-    )
-    instrument2 = Instruments(
-        name="Trompeta"
-    )
-    instrument3 = Instruments(
-        name="Piano"
-    )
-    instrument4 = Instruments(
-        name="Maracas"
-    )
-    # -------------------- CREATE Generes --------------------
-
-    mylogger.info("CreatinMusicalGenere data...")
-    genere1 = MusicalGenere(
-        name="Rock"
-    )
-    genere2 = MusicalGenere(
-        name="Pop"
-    )
-    genere3 = MusicalGenere(
-        name="Country"
-    )
-    genere4 = MusicalGenere(
-        name="Metal"
-    )
-
-
-    usuariadmin_guitarra = AssociationUserInstruments(
-        id_user=1,
-        id_instrument=1,
-        expirience=4
-    )
-    usuari1_guitarra = AssociationUserInstruments(
-        id_user=2,
-        id_instrument=1,
-        expirience=4
-    )
-    usuari2_guitarra = AssociationUserInstruments(
-        id_user=3,
-        id_instrument=1,
-        expirience=4
-    )
-    usuari1_piano = AssociationUserInstruments(
-        id_user=2,
-        id_instrument=3,
-        expirience=2
-    )
-
     # noinspection PyArgumentList
     user_1 = User(
         created_at=datetime.datetime(2020, 1, 1, 0, 1, 1),
@@ -123,7 +93,6 @@ if __name__ == "__main__":
         description="description user1",
         firstTime=False,
         gen_exp=3.0,
-        user_musicalgeneres=[genere1, genere2]
     )
     user_1.set_password("1234")
     user_1.tokens.append(UserToken(token="656e50e154865a5dc469b80437ed2f963b8f58c8857b66c9bf"))
@@ -140,7 +109,6 @@ if __name__ == "__main__":
         gps="40.390205,2.5504",
         description="description user2",
         gen_exp=5.0,
-        user_musicalgeneres=[genere4,genere2]
     )
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
@@ -148,28 +116,12 @@ if __name__ == "__main__":
     user_1.subscribed_to.append(user_2)
     user_admin.subscribed_to.append(user_1)
 
-    # ----Adding Generes----#
-    db_session.add(genere1)
-    db_session.add(genere2)
-    db_session.add(genere3)
-    db_session.add(genere4)
 
     # ----Adding Users----#
     db_session.add(user_admin)
     db_session.add(user_1)
     db_session.add(user_2)
 
-    #----Adding Instruments----#
-    db_session.add(instrument1)
-    db_session.add(instrument2)
-    db_session.add(instrument3)
-    db_session.add(instrument4)
-
-    db_session.add(usuari1_guitarra)
-    db_session.add(usuari2_guitarra)
-
-    db_session.add(usuari1_piano)
-    db_session.add(usuariadmin_guitarra)
 
     db_session.commit()
     db_session.close()

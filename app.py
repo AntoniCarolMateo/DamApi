@@ -21,7 +21,6 @@ def handle_404(req, resp):
     resp.media = messages.resource_not_found
     resp.status = falcon.HTTP_404
 
-
 # FALCON
 app = application = falcon.API(
     middleware=[
