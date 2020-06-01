@@ -38,30 +38,6 @@ if __name__ == "__main__":
     mylogger.info("Creating database...")
     SQLAlchemyBase.metadata.create_all(db.DB_ENGINE)
 
-    # -------------------- CREATE Instruments --------------------
-    mylogger.info("Creating instrumets data...")
-
-    ins_path = os.path.join(os.path.dirname(__file__), "instrumentsdata.txt")
-    file_ins = open(ins_path, "r")
-    Lines = file_ins.readlines()
-    for ins in Lines:
-        instrument = Instruments(
-            name=ins.strip()
-        )
-        db_session.add(instrument)
-
-    # -------------------- CREATE Generes --------------------
-    mylogger.info("Creating MusicalGenere data...")
-
-    gen_path = os.path.join(os.path.dirname(__file__), "musicalgenresdata.txt")
-    file_gen = open(gen_path, "r")
-    Lines = file_gen.readlines()
-    for genre in Lines:
-        genre = MusicalGenere(
-            name=genre.strip()
-        )
-        db_session.add(genre)
-
     # -------------------- CREATE USERS --------------------
     mylogger.info("Creating default users...")
     # noinspection PyArgumentList
@@ -116,6 +92,52 @@ if __name__ == "__main__":
     user_1.subscribed_to.append(user_2)
     user_admin.subscribed_to.append(user_1)
 
+    # -------------------- CREATE Instruments --------------------
+    mylogger.info("Creating instrumets data...")
+
+    ins_path = os.path.join(os.path.dirname(__file__), "instrumentsdata.txt")
+    file_ins = open(ins_path, "r")
+    Lines = file_ins.readlines()
+    for ins in Lines:
+        instrument = Instruments(
+            name=ins.strip()
+        )
+
+        db_session.add(instrument)
+        if instrument.name == "Bajo":
+            a1 = AssociationUserInstruments(
+                expirience=3.0,
+                assoc_instruments=instrument)
+            user_1.user_instruments.append(a1)
+        if instrument.name == "Voz":
+            a2 = AssociationUserInstruments(
+                expirience=4.0,
+                assoc_instruments =instrument)
+            user_2.user_instruments.append(a2)
+
+        # if ins == "Batería" or "Guitarra Clássica":
+        #
+        # if ins == "Piano Électrico":
+
+
+    # -------------------- CREATE Generes --------------------
+    mylogger.info("Creating MusicalGenere data...")
+
+    gen_path = os.path.join(os.path.dirname(__file__), "musicalgenresdata.txt")
+    file_gen = open(gen_path, "r")
+    Lines = file_gen.readlines()
+    for gen in Lines:
+        genre = MusicalGenere(
+            name=gen.strip()
+        )
+        if gen == "Blues" or "Rock and Roll" or "Jazz":
+            user_2.user_musicalgeneres.append(genre)
+        if gen == "Disco" or "Pop" or "Trap":
+            user_admin.user_musicalgeneres.append(genre)
+        if gen == "Salsa" or "Bachata":
+            user_1.user_musicalgeneres.append(genre)
+        else:
+            db_session.add(genre)
 
     # ----Adding Users----#
     db_session.add(user_admin)

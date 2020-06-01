@@ -18,6 +18,7 @@ from resources.base_resources import DAMCoreResource
 
 mylogger = logging.getLogger(__name__)
 
+
 @falcon.before(requires_auth)
 class ResourceAddGeneres(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):

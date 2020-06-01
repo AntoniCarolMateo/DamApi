@@ -27,7 +27,7 @@ class ResourceAddInstrument(DAMCoreResource):
 
         try:
             for instrument in req.media:
-                print(req.media)
+
                 if (instrument['name'] and instrument['expirience']) is not None:
 
                     aux_instrument_name = instrument['name']
@@ -92,7 +92,6 @@ class ResourceRemoveInstrument(DAMCoreResource):
         super(ResourceRemoveInstrument, self).on_delete(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
-        print("vhivat")
         try:
             if "name" in kwargs:
                 print(kwargs["name"])

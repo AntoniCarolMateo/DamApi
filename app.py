@@ -8,7 +8,8 @@ import falcon
 import messages
 import middlewares
 from resources import account_resources, common_resources, user_resources, data_app_resources
-from resources import instruments_resources, musicalGenres_resources, profile_resources, matchANDSuscrition_resource
+from resources import instruments_resources, musicalGenres_resources, profile_resources, \
+    match_resources, suscription_resource
 from settings import configure_logging
 
 # LOGGING
@@ -31,31 +32,30 @@ app = application = falcon.API(
 )
 application.add_route("/", common_resources.ResourceHome())
 
-application.add_route("/account/profile", account_resources.ResourceAccountUserProfile())
+# ------------------------------- REGISTER and LOGIN ------------------------------------------ #
 application.add_route("/account/create_token", account_resources.ResourceCreateUserToken())
 application.add_route("/account/delete_token", account_resources.ResourceDeleteUserToken())
-
-app.add_route("/account/profile/show", account_resources.ResourceAccountShowUserProfile())
-
-application.add_route("/account/profile/setfirstSetUp", account_resources.ResourceCompletedFirstSetUp())
-application.add_route("/account/profile/getfirstSetUp", account_resources.ResourceGetFirstSetUp())
-
 application.add_route("/users/register", user_resources.ResourceRegisterUser())
 application.add_route("/users/show/{username}", user_resources.ResourceGetUserProfile())
-
 application.add_route("/users/all", user_resources.ResourceGetUsers())
 
-# ------------------------------- PROFILE SET UP ------------------------------------------ #
+# ------------------------------- PROFILE ------------------------------------------ #
 application.add_route("/account/update_profile", profile_resources.ResourceAccountUpdateUserProfile())
 application.add_route("/account/profile/setUsername/{username}", profile_resources.ResourceAccountSetUsername())
 application.add_route("/account/profile/setUserRol/{rol}", profile_resources.ResourceAccountSetUserRole())
 
+application.add_route("/account/profile/setfirstSetUp", profile_resources.ResourceCompletedFirstSetUp())
+application.add_route("/account/profile/getfirstSetUp", profile_resources.ResourceGetFirstSetUp())
+
+application.add_route("/account/profile", profile_resources.ResourceAccountUserProfile())
+app.add_route("/account/profile/show", profile_resources.ResourceAccountShowUserProfile())
+
 # ------------------------------- MATCH AND SUSCRIPTION ------------------------------------------ #
-application.add_route("/users/match", matchANDSuscrition_resource.ResourceGetUserMatch())
-application.add_route("/users/get_subscribed", matchANDSuscrition_resource.ResourceGetSubscribed())
-application.add_route("/users/get_info_by_subscription/{username}", matchANDSuscrition_resource.ResourceGetInfoSubscription())
-application.add_route("/users/subscribe/{username}", matchANDSuscrition_resource.ResourceSubscribeUser())
-application.add_route("/users/delete_subscribed/{username}", matchANDSuscrition_resource.ResourceDeleteSubscribed())
+application.add_route("/users/match", match_resources.ResourceGetUserMatch())
+application.add_route("/users/get_subscribed", suscription_resource.ResourceGetSubscribed())
+application.add_route("/users/get_info_by_subscription/{username}", suscription_resource.ResourceGetInfoSubscription())
+application.add_route("/users/subscribe/{username}", suscription_resource.ResourceSubscribeUser())
+application.add_route("/users/delete_subscribed/{username}", suscription_resource.ResourceDeleteSubscribed())
 
 
 # ------------------------------- GESTIÓN USER-INSTRUMENTS ------------------------------------------ #
