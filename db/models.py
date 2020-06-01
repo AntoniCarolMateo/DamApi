@@ -6,7 +6,6 @@ import datetime
 import enum
 import logging
 import os
-from _operator import and_
 from builtins import getattr
 from urllib.parse import urljoin
 
@@ -29,17 +28,17 @@ SQLAlchemyBase = declarative_base()
 make_translatable(options={"locales": settings.get_accepted_languages()})
 
 
-def _generate_media_url(class_instance, class_attibute_name, default_image=False):
+def _generate_media_url(class_instance, class_attribute_name, default_image=False):
     class_base_url = urljoin(urljoin(urljoin("http://{}".format(settings.STATIC_HOSTNAME), settings.STATIC_URL),
                                      settings.MEDIA_PREFIX),
                              class_instance.__tablename__ + "/")
-    class_attribute = getattr(class_instance, class_attibute_name)
+    class_attribute = getattr(class_instance, class_attribute_name)
     if class_attribute is not None:
         return urljoin(urljoin(urljoin(urljoin(class_base_url, class_attribute), str(class_instance.id) + "/"),
-                               class_attibute_name + "/"), class_attribute)
+                               class_attribute_name + "/"), class_attribute)
     else:
         if default_image:
-            return urljoin(urljoin(class_base_url, class_attibute_name + "/"), settings.DEFAULT_IMAGE_NAME)
+            return urljoin(urljoin(class_base_url, class_attribute_name + "/"), settings.DEFAULT_IMAGE_NAME)
         else:
             return class_attribute
 
@@ -85,9 +84,6 @@ class AssociationUserInstruments(SQLAlchemyBase, JSONModel):
     assoc_instruments = relationship("Instruments")
 
 
-
-
-
 class Instruments(SQLAlchemyBase, JSONModel):
     __tablename__ = "instruments"
 
@@ -130,12 +126,10 @@ class User(SQLAlchemyBase, JSONModel):
     description = Column(Unicode(255))
     gen_exp = Column(Float)
 
-
     user_instruments = relationship("AssociationUserInstruments")
     user_musicalgeneres = relationship("MusicalGenere", secondary=AssociationUserMusicalGenre)
 
     subscribed_to = relationship("User",secondary=seguidores,primaryjoin=id==seguidores.c.seguidor,secondaryjoin=id==seguidores.c.seguido,backref="left_nodes")
-
 
     @hybrid_property
     def public_profile(self):
@@ -212,13 +206,6 @@ class User(SQLAlchemyBase, JSONModel):
             "gps": self.gps,
 
         }
-
-
-
-# ------------------- MODELOS INSTRUMENTOS ------------------------
-
-
-# ------------------- MODELOS Generes ------------------------
 
 class MusicalGenere(SQLAlchemyBase, JSONModel):
     __tablename__ = "musicalgeneres"
