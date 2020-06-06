@@ -116,9 +116,6 @@ if __name__ == "__main__":
                 assoc_instruments =instrument)
             user_2.user_instruments.append(a2)
 
-        # if ins == "Batería" or "Guitarra Clássica":
-        #
-        # if ins == "Piano Électrico":
 
 
     # -------------------- CREATE Generes --------------------
@@ -131,14 +128,15 @@ if __name__ == "__main__":
         genre = MusicalGenere(
             name=gen.strip()
         )
-        if gen == "Blues" or "Rock and Roll" or "Jazz":
+        db_session.add(genre)
+        if genre.name == "Blues":
             user_2.user_musicalgeneres.append(genre)
-        if gen == "Disco" or "Pop" or "Trap":
+        if genre.name == "Disco":
             user_admin.user_musicalgeneres.append(genre)
-        if gen == "Salsa" or "Bachata":
+        if genre.name == "Salsa":
             user_1.user_musicalgeneres.append(genre)
-        else:
-            db_session.add(genre)
+
+
 
     # ----Adding Users----#
     db_session.add(user_admin)

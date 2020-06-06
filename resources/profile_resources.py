@@ -21,6 +21,7 @@ mylogger = logging.getLogger(__name__)
 @falcon.before(requires_auth)
 class ResourceAccountUpdateUserProfile(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
+
         super(ResourceAccountUpdateUserProfile, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
@@ -56,20 +57,17 @@ class ResourceAccountUpdateUserProfile(DAMCoreResource):
 @falcon.before(requires_auth)
 class ResourceAccountSetUserRole(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
+
         super(ResourceAccountSetUserRole, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
 
         if "rol" in kwargs:
             aux_rol = kwargs["rol"]
-            print(aux_rol)
-            if aux_rol == "SOLO":
-                current_user.rol = RolEnum.user
-            elif aux_rol == "BAND":
-                current_user.rol = RolEnum.band
-            elif aux_rol == "PARTNER":
-                current_user.rol = RolEnum.sponsor
-        print("ROl " + format(current_user.rol))
+
+            current_user.rol = aux_rol
+            print("ROl " + format(current_user.rol))
+
         self.db_session.add(current_user)
         self.db_session.commit()
         resp.status = falcon.HTTP_200
@@ -78,6 +76,7 @@ class ResourceAccountSetUserRole(DAMCoreResource):
 @falcon.before(requires_auth)
 class ResourceAccountSetUsername(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
+
         super(ResourceAccountSetUsername, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
@@ -104,6 +103,7 @@ class ResourceAccountShowUserProfile(DAMCoreResource):
 @falcon.before(requires_auth)
 class ResourceCompletedFirstSetUp(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
+
         super(ResourceCompletedFirstSetUp, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]

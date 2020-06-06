@@ -74,6 +74,7 @@ class ResourceGetUserMatch(DAMCoreResource):
                 instrumentos_user.append(current_instrument[1])
 
         resultados_filtro_instrumentos = []
+
         if (len(instrumentos_user) != 0):
 
             for result in resultados_filtro_distancia:

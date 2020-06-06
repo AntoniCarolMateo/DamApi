@@ -43,17 +43,21 @@ def _generate_media_url(class_instance, class_attribute_name, default_image=Fals
             return class_attribute
 
 
+# DEFINING ENUMS
+# GenreEnum : Enum with the gender Value
 class GenreEnum(enum.Enum):
     male = "M"
     female = "F"
 
 
+# RolEnum : Enum with the dierent roles for the user
 class RolEnum(enum.Enum):
     user = "user"
     band = "band"
     sponsor = "sponsor"
 
 
+# DEFNING THE DIFERENT MODELS, DATABASE TABLES
 class UserToken(SQLAlchemyBase):
     __tablename__ = "users_tokens"
 
@@ -61,13 +65,6 @@ class UserToken(SQLAlchemyBase):
     token = Column(Unicode(50), nullable=False, unique=True)
     user_id = Column(Integer, ForeignKey("users.id", onupdate="CASCADE", ondelete="CASCADE"), nullable=False)
     user = relationship("User", back_populates="tokens")
-
-    @hybrid_property
-    def json_model(self):
-        return {
-            "id_instrument": self.id_instrument,
-            "name": self.name
-        }
 
 
 class AssociationUserInstruments(SQLAlchemyBase, JSONModel):
@@ -93,16 +90,15 @@ class Instruments(SQLAlchemyBase, JSONModel):
 
 AssociationUserMusicalGenre = Table('user-musicalgeneres-association', SQLAlchemyBase.metadata,
                                     Column('id_user', Integer, ForeignKey('users.id',
-                                                                           onupdate="CASCADE", ondelete="CASCADE"),
-                                            nullable=False),
+                                                                          onupdate="CASCADE", ondelete="CASCADE"),
+                                           nullable=False),
                                     Column('id_genre', Integer, ForeignKey('musicalgeneres.id',
-                                                                             onupdate="CASCADE", ondelete="CASCADE"),
-                                            nullable=False))
-
+                                                                           onupdate="CASCADE", ondelete="CASCADE"),
+                                           nullable=False))
 
 seguidores = Table("seguimientos", SQLAlchemyBase.metadata,
-    Column("seguidor", Integer, ForeignKey("users.id"), primary_key=True),
-    Column("seguido", Integer, ForeignKey("users.id"), primary_key=True))
+                   Column("seguidor", Integer, ForeignKey("users.id"), primary_key=True),
+                   Column("seguido", Integer, ForeignKey("users.id"), primary_key=True))
 
 
 class User(SQLAlchemyBase, JSONModel):
@@ -129,7 +125,8 @@ class User(SQLAlchemyBase, JSONModel):
     user_instruments = relationship("AssociationUserInstruments")
     user_musicalgeneres = relationship("MusicalGenere", secondary=AssociationUserMusicalGenre)
 
-    subscribed_to = relationship("User",secondary=seguidores,primaryjoin=id==seguidores.c.seguidor,secondaryjoin=id==seguidores.c.seguido,backref="left_nodes")
+    subscribed_to = relationship("User", secondary=seguidores, primaryjoin=id == seguidores.c.seguidor,
+                                 secondaryjoin=id == seguidores.c.seguido, backref="left_nodes")
 
     @hybrid_property
     def public_profile(self):
@@ -138,6 +135,11 @@ class User(SQLAlchemyBase, JSONModel):
             mgenere = ""
         else:
             mgenere = self.genere.value
+        mrol = self.rol
+        if mrol is None:
+            mrol = ""
+        else:
+            mrol = self.rol.value
         return {
             "created_at": self.created_at.strftime(settings.DATETIME_DEFAULT_FORMAT),
             "username": self.username,
@@ -146,7 +148,7 @@ class User(SQLAlchemyBase, JSONModel):
             "gps": self.gps,
             "description": self.description,
             "gen_exp": self.gen_exp,
-            "rol" : str(self.rol)
+            "rol": mrol
         }
 
     @hybrid_property
@@ -156,6 +158,11 @@ class User(SQLAlchemyBase, JSONModel):
             mgenere = ""
         else:
             mgenere = self.genere.value
+        mrol = self.rol
+        if mrol is None:
+            mrol = ""
+        else:
+            mrol = self.rol.value
         return {
             "username": self.username,
             "name": self.name,
@@ -164,7 +171,8 @@ class User(SQLAlchemyBase, JSONModel):
             "birthdate": self.birthdate.strftime(
                 settings.DATE_DEFAULT_FORMAT) if self.birthdate is not None else self.birthdate,
             "gen_exp": self.gen_exp,
-            "description": self.description
+            "description": self.description,
+            "rol": mrol
 
         }
 
@@ -192,6 +200,11 @@ class User(SQLAlchemyBase, JSONModel):
             mgenere = ""
         else:
             mgenere = self.genere.value
+        mrol = self.rol
+        if mrol is None:
+            mrol = ""
+        else:
+            mrol = self.rol.value
         return {
             "created_at": self.created_at.strftime(settings.DATETIME_DEFAULT_FORMAT),
             "username": self.username,
@@ -204,8 +217,9 @@ class User(SQLAlchemyBase, JSONModel):
             "phone": self.phone,
             "photo": self.photo,
             "gps": self.gps,
-
+            "rol": mrol
         }
+
 
 class MusicalGenere(SQLAlchemyBase, JSONModel):
     __tablename__ = "musicalgeneres"

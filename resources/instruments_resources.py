@@ -2,25 +2,24 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import re
+
 
 import falcon
-from falcon.media.validators import jsonschema
-from sqlalchemy import and_
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 
 import messages
-from db.models import User, Instruments, MusicalGenere, AssociationUserInstruments, AssociationUserMusicalGenre
+from db.models import User, Instruments, AssociationUserInstruments
 from hooks import requires_auth
 from resources.base_resources import DAMCoreResource
 
 mylogger = logging.getLogger(__name__)
 
+
 @falcon.before(requires_auth)
 class ResourceAddInstrument(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
+
         super(ResourceAddInstrument, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
@@ -63,6 +62,7 @@ class ResourceAddInstrument(DAMCoreResource):
 @falcon.before(requires_auth)
 class ResourceGetTableInstruments(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
+
         super(ResourceGetTableInstruments, self).on_get(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
@@ -89,6 +89,7 @@ class ResourceGetTableInstruments(DAMCoreResource):
 @falcon.before(requires_auth)
 class ResourceRemoveInstrument(DAMCoreResource):
     def on_delete(self, req, resp, *args, **kwargs):
+
         super(ResourceRemoveInstrument, self).on_delete(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]

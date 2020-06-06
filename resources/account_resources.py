@@ -58,6 +58,7 @@ class ResourceCreateUserToken(DAMCoreResource):
 class ResourceDeleteUserToken(DAMCoreResource):
     @jsonschema.validate(SchemaUserToken)
     def on_post(self, req, resp, *args, **kwargs):
+
         super(ResourceDeleteUserToken, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]

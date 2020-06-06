@@ -22,6 +22,7 @@ mylogger = logging.getLogger(__name__)
 @falcon.before(requires_auth)
 class ResourceAddGeneres(DAMCoreResource):
     def on_post(self, req, resp, *args, **kwargs):
+
         super(ResourceAddGeneres, self).on_post(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
@@ -47,6 +48,7 @@ class ResourceAddGeneres(DAMCoreResource):
 @falcon.before(requires_auth)
 class ResourceGetGenereList(DAMCoreResource):
     def on_get(self, req, resp, *args, **kwargs):
+
         super(ResourceGetGenereList, self).on_get(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
@@ -72,6 +74,7 @@ class ResourceGetGenereList(DAMCoreResource):
 @falcon.before(requires_auth)
 class ResourceRemoveGenere(DAMCoreResource):
     def on_delete(self, req, resp, *args, **kwargs):
+
         super(ResourceRemoveGenere, self).on_delete(req, resp, *args, **kwargs)
 
         current_user = req.context["auth_user"]
