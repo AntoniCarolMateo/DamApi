@@ -62,13 +62,13 @@ if __name__ == "__main__":
         email="usuari1@gmail.com",
         name="usuari",
         surname="1",
-        rol=RolEnum.user,
         birthdate=datetime.datetime(1989, 1, 1),
         genere=GenreEnum.male,
         gps="42.390205,3.1504",
         description="description user1",
         firstTime=False,
         gen_exp=3.0,
+        rol=RolEnum.band
     )
     user_1.set_password("1234")
     user_1.tokens.append(UserToken(token="656e50e154865a5dc469b80437ed2f963b8f58c8857b66c9bf"))
@@ -85,6 +85,7 @@ if __name__ == "__main__":
         gps="40.390205,2.5504",
         description="description user2",
         gen_exp=5.0,
+        rol=RolEnum.user
     )
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
