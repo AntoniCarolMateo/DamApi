@@ -121,6 +121,7 @@ class User(SQLAlchemyBase, JSONModel):
     gps = Column(UnicodeText, nullable=False)
     description = Column(Unicode(255))
     gen_exp = Column(Float)
+    eula = Column(Integer)
 
     user_instruments = relationship("AssociationUserInstruments")
     user_musicalgeneres = relationship("MusicalGenere", secondary=AssociationUserMusicalGenre)

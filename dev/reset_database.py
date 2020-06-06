@@ -51,7 +51,8 @@ if __name__ == "__main__":
         gps="42.090205,1.1504",
         rol=RolEnum.sponsor,
         gen_exp=4.5,
-        description="description admin"
+        description="description admin",
+        eula = 1
     )
     user_admin.set_password("DAMCoure")
 
@@ -68,7 +69,8 @@ if __name__ == "__main__":
         description="description user1",
         firstTime=False,
         gen_exp=3.0,
-        rol=RolEnum.band
+        rol=RolEnum.band,
+        eula = 1
     )
     user_1.set_password("1234")
     user_1.tokens.append(UserToken(token="656e50e154865a5dc469b80437ed2f963b8f58c8857b66c9bf"))
@@ -85,7 +87,8 @@ if __name__ == "__main__":
         gps="40.390205,2.5504",
         description="description user2",
         gen_exp=5.0,
-        rol=RolEnum.user
+        rol=RolEnum.user,
+        eula=1
     )
     user_2.set_password("r45tgt")
     user_2.tokens.append(UserToken(token="0a821f8ce58965eadc5ef884cf6f7ad99e0e7f58f429f584b2"))
@@ -110,6 +113,16 @@ if __name__ == "__main__":
                 expirience=3.0,
                 assoc_instruments=instrument)
             user_1.user_instruments.append(a1)
+        if instrument.name == "Guitarra":
+            a3 = AssociationUserInstruments(
+                expirience=2.0,
+                assoc_instruments=instrument)
+            user_2.user_instruments.append(a3)
+        if instrument.name == "Trompeta":
+            a4 = AssociationUserInstruments(
+                expirience=5.0,
+                assoc_instruments=instrument)
+            user_1.user_instruments.append(a4)
         if instrument.name == "Voz":
             a2 = AssociationUserInstruments(
                 expirience=4.0,
@@ -135,10 +148,32 @@ if __name__ == "__main__":
             user_admin.user_musicalgeneres.append(genre)
         if genre.name == "Salsa":
             user_1.user_musicalgeneres.append(genre)
+        if genre.name == "Metal":
+            user_1.user_musicalgeneres.append(genre)
+            user_2.user_musicalgeneres.append(genre)
+        if genre.name == "Rock":
+            user_1.user_musicalgeneres.append(genre)
 
 
 
     # ----Adding Users----#
+
+
+
+    genre_aux = MusicalGenere(name="Metal")
+    user_1.user_musicalgeneres.append(genre_aux)
+
+
+    #instrument = Instruments(name="Guitarra")
+    #a1 = AssociationUserInstruments(expirience=2.0,assoc_instruments=instrument)
+    #user_1.user_instruments.append(a1)
+    
+    #instrument = Instruments(name="Trompeta")
+    #a1 = AssociationUserInstruments(expirience=2.0,assoc_instruments=instrument)
+    #user_2.user_instruments.append(a1)
+
+
+
     db_session.add(user_admin)
     db_session.add(user_1)
     db_session.add(user_2)
