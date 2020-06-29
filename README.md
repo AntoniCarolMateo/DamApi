@@ -28,17 +28,6 @@ $ docker-compose down                          #Stop
 
 ## Resources
 
-### Account Resources
-- POST /account/create_token
-- [A] POST /account/delete_token
-- [A] GET /account/profile
+Diferent Type of resources depending on the topic.
 
-### Users Resources
-- POST /users/register
-    - Required fields (body):
-        - *String*: **username**: it must be a valid phone or a valid email.
-        - *String*: **password**: it must be encrypted using sha256.
-    
-
-- [A] GET /users/show/{username:str}
 
